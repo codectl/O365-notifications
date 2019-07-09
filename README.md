@@ -18,6 +18,4 @@ Project dependencies installed by pip:
 * tzlocal
 * pytz
 * SQLAlchemy
-
-# Local dependencies
-* file:../o365-subscription/dependencies/manage.py-0.2.10/dist/manage.py-0.2.10.tar.gz#egg=manage.py
+* manage.py (local dependency)
