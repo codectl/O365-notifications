@@ -2,45 +2,16 @@ import json
 import logging
 import requests
 from abc import abstractmethod
-from enum import Enum
 
-from O365.utils import ApiComponent
 from O365.mailbox import MailBox, Folder
 
+from .notification import (
+    O365Notification,
+    O365Notifications,
+    O365NotificationsHandler
+)
+
 logger = logging.getLogger(__name__)
-
-
-class O365Notification(ApiComponent):
-    """ Notification representation """
-
-    class Type(Enum):
-        O365_NOTIFICATION = '#Microsoft.OutlookServices.Notification'
-        O365_STREAMING_SUBSCRIPTION = '#Microsoft.OutlookServices.StreamingSubscription'
-        O365_KEEP_ALIVE_NOTIFICATION = '#Microsoft.OutlookServices.KeepAliveNotification'
-
-    class ResourceType(Enum):
-        O365_MESSAGE = '#Microsoft.OutlookServices.Message'
-        O365_EVENT = '#Microsoft.OutlookServices.Event'
-
-    class ChangeType(Enum):
-        ACKNOWLEDGEMENT = 'Acknowledgment'
-        CREATED = 'Created'
-        DELETED = 'Deleted'
-        MISSED = 'Missed'
-        UPDATED = 'Updated'
-
-    def __init__(self, parent=None, **kwargs):
-        self.parent = parent
-        protocol = parent.protocol
-
-        super().__init__(protocol=protocol, **kwargs)
-
-        self.type = kwargs.get('@odata.type')
-        self.subscription_id = kwargs.get(self._cc('id'))
-        self.resource = kwargs.get(self._cc('resource'))
-        self.change_type = kwargs.get(self._cc('changeType'))
-        if kwargs.get(self._cc('resourceData')):
-            self.resource_data = dict(**kwargs.get(self._cc('resourceData')))
 
 
 class O365StreamingNotification(O365Notification):
@@ -50,52 +21,8 @@ class O365StreamingNotification(O365Notification):
         super().__init__(parent=parent, **kwargs)
 
 
-class O365NotificationHandler:
-    """ Handler meant to deal with incoming notifications """
-
-    @abstractmethod
-    def process(self, notification):
-        """
-        Process a notification.
-        Override as this function simply prints the given notification.
-        """
-        logger.debug(vars(notification))
-
-
-class O365Subscription(ApiComponent):
-    """ Subscription representation for Push O365Notification Service """
-
-    def __init__(self, *, parent=None, con=None, **kwargs):
-        # connection is only needed if you want to communicate with the api provider
-        self.con = getattr(parent, 'con', con)
-        self.parent = parent if issubclass(type(parent), O365Subscription) else None
-
-        protocol = kwargs.get('protocol') or getattr(parent, 'protocol', None)
-        main_resource = kwargs.get('main_resource') or getattr(parent, 'main_resource', None)
-
-        super().__init__(protocol=protocol, main_resource=main_resource)
-
-        self.name = kwargs.get('name', getattr(parent, 'name', None))
-        self.change_type = kwargs.get('change_type', getattr(parent, 'change_type', None))
-        self.subscribed_resources = []
-
-    @property
-    def request_type(self):
-        raise NotImplementedError('Subclasses must implement this method.')
-
-    def subscribe(self, *, resource):
-        raise NotImplementedError('Subclasses must implement this method.')
-
-    def renew_subscriptions(self):
-        """ Renew subscriptions """
-        logger.info("Renew subscription for {0}".format(str(self.subscribed_resources)))
-        subscriptions = [self.subscribe(resource=resource) for resource in self.subscribed_resources]
-        logger.info("Renewed subscriptions are {0}".format(str(subscriptions)))
-        return subscriptions
-
-
-class StreamingSubscription(O365Subscription):
-    """ Streaming implementation for Subscription """
+class O365StreamingNotifications(O365Notifications):
+    """ Streaming implementation for O365 Notifications """
 
     _endpoints = {
         'subscriptions': '/subscriptions',
@@ -179,13 +106,14 @@ class StreamingSubscription(O365Subscription):
         elif not isinstance(subscriptions, list):
             subscriptions = [subscriptions]
 
-        notification_handler = notification_handler or O365NotificationHandler()
+        notification_handler = notification_handler or O365NotificationsHandler()
         url = self.build_url(self._endpoints.get('notifications'))
 
-        data = dict()
-        data[self._cc('connectionTimeoutInMinutes')] = connection_timeout
-        data[self._cc('keepAliveNotificationIntervalInSeconds')] = keep_alive_interval
-        data[self._cc('subscriptionIds')] = subscriptions
+        data = {
+            self._cc('connectionTimeoutInMinutes'): connection_timeout,
+            self._cc('keepAliveNotificationIntervalInSeconds'): keep_alive_interval,
+            self._cc('subscriptionIds'): subscriptions
+        }
 
         logger.info('Start listening for events ...')
         while True:
@@ -263,17 +191,17 @@ class StreamingSubscription(O365Subscription):
         logger.info('Stopped listening for events: connection closed.')
 
 
-class MailBoxStreamingSubscription(StreamingSubscription):
-    """ Streaming implementation for MailBox Subscription """
+class O365MailBoxStreamingNotifications(O365StreamingNotifications):
+    """ Streaming implementation for MailBox Streaming notifications """
 
-    subscription_constructor = StreamingSubscription
+    notifications_constructor = O365StreamingNotifications
 
     def __init__(self, *, parent, **kwargs):
-        """ Mailbox Streaming Subscription
+        """ Mailbox Streaming Notifications
 
-        :param parent: parent mailbox for this subscription
+        :param parent: parent mailbox for this notification
         :type parent: Mailbox
-        :param kwargs: any extra args to be passed to the StreamingSubscription instance
+        :param kwargs: any extra args to be passed to the StreamingNotifications instance
         :raises ValueError: if parent is not instance of Mailbox
         """
         if not isinstance(parent, MailBox):
