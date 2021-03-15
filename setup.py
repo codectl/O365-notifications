@@ -4,7 +4,7 @@ with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='example-pkg-rena2damas',
+    name='o365_notifications',
     version='0.0.1',
     author='Renato Damas',
     author_email='me@renatodamas.com',
@@ -16,7 +16,7 @@ setuptools.setup(
         'Bug Tracker': 'https://github.com/rena2damas/o365-notifications/issues',
     },
     classifiers=[
-        'O365 :: Streaming Notifications',
+        'O365 :: Notifications',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',

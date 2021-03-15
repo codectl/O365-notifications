@@ -3,9 +3,7 @@ import logging
 import requests
 from abc import abstractmethod
 
-from O365.mailbox import MailBox, Folder
-
-from .notification import (
+from src.o365_notifications.base import (
     O365Notification,
     O365Notifications,
     O365NotificationsHandler
@@ -15,14 +13,14 @@ logger = logging.getLogger(__name__)
 
 
 class O365StreamingNotification(O365Notification):
-    """ Streaming implementation for O365Notification """
+    """ O365 Streaming Notification """
 
     def __init__(self, parent=None, **kwargs):
         super().__init__(parent=parent, **kwargs)
 
 
 class O365StreamingNotifications(O365Notifications):
-    """ Streaming implementation for O365 Notifications """
+    """ O365 Streaming Notifications """
 
     _endpoints = {
         'subscriptions': '/subscriptions',
@@ -66,10 +64,11 @@ class O365StreamingNotifications(O365Notifications):
             self.subscribed_resources.append(resource)
         resource_namespace = self.resource_namespace(resource)
 
-        data = dict()
-        data['@odata.type'] = self.request_type
-        data[self._cc('resource')] = resource_namespace
-        data[self._cc('changeType')] = self.change_type
+        data = {
+            '@odata.type': self.request_type,
+            self._cc('resource'): resource_namespace,
+            self._cc('changeType'): self.change_type
+        }
 
         try:
             response = self.con.post(url, data)
@@ -189,36 +188,3 @@ class O365StreamingNotifications(O365Notifications):
                 break
 
         logger.info('Stopped listening for events: connection closed.')
-
-
-class O365MailBoxStreamingNotifications(O365StreamingNotifications):
-    """ Streaming implementation for MailBox Streaming notifications """
-
-    notifications_constructor = O365StreamingNotifications
-
-    def __init__(self, *, parent, **kwargs):
-        """ Mailbox Streaming Notifications
-
-        :param parent: parent mailbox for this notification
-        :type parent: Mailbox
-        :param kwargs: any extra args to be passed to the StreamingNotifications instance
-        :raises ValueError: if parent is not instance of Mailbox
-        """
-        if not isinstance(parent, MailBox):
-            raise ValueError("'parent' must be instance of Mailbox")
-
-        super().__init__(parent=parent, **kwargs)
-
-    def resource_namespace(self, resource):
-        """
-        Get the full resource namespace for
-        the folder resource.
-
-        :param Folder resource: the resource
-        :return: the full resource namespace
-        """
-        if not isinstance(resource, Folder):
-            raise ValueError("'resource' must be instance of Folder")
-
-        return resource.build_url(resource._endpoints.get('folder_messages').format(
-            id=resource.folder_id) if resource else resource._endpoints.get('root_messages'))
