@@ -87,12 +87,12 @@ class O365StreamingNotifications(O365Notifications):
             logger.debug("Subscribed to resource {0}: Response: {1}".format(resource, notification))
             return notification['Id']
 
-    def listen_to_notifications(self, *, subscriptions, notification_handler=None,
-                                connection_timeout=_default_connection_timeout_in_minutes,
-                                keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
-                                refresh_after_expire=False):
+    def create_event_channel(self, *, subscriptions, notification_handler=None,
+                             connection_timeout=_default_connection_timeout_in_minutes,
+                             keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
+                             refresh_after_expire=False):
         """
-        Listen to new notifications.
+        Create a new channel for events.
 
         :param subscriptions: subscription id's to listen to
         :param notification_handler: the notifications handler
@@ -114,7 +114,7 @@ class O365StreamingNotifications(O365Notifications):
             self._cc('subscriptionIds'): subscriptions
         }
 
-        logger.info('Start listening for events ...')
+        logger.info('Open new events channel ...')
         while True:
             try:
                 response = self.con.post(url, data, stream=True)
