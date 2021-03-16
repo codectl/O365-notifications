@@ -8,7 +8,7 @@ setuptools.setup(
     version='0.0.1',
     author='Renato Damas',
     author_email='me@renatodamas.com',
-    description='A small example package',
+    description='O365 notifications service',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/rena2damas/o365-notifications',
