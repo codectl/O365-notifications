@@ -1,4 +1,4 @@
-from src.o365_notifications.base import (
+from o365_notifications.base import (
     O365Notification,
     O365Notifications
 )

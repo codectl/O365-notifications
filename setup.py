@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 
 setuptools.setup(
     name='o365_notifications',
-    version='0.0.1',
+    version='0.1.0',
     author='Renato Damas',
     author_email='me@renatodamas.com',
     description='O365 notifications service',
