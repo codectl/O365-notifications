@@ -87,10 +87,15 @@ class O365StreamingNotifications(O365Notifications):
             logger.debug("Subscribed to resource {0}: Response: {1}".format(resource, notification))
             return notification['Id']
 
-    def create_event_channel(self, *, subscriptions, notification_handler=None,
-                             connection_timeout=_default_connection_timeout_in_minutes,
-                             keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
-                             refresh_after_expire=False):
+    def create_event_channel(
+            self,
+            *,
+            subscriptions,
+            notification_handler=None,
+            connection_timeout=_default_connection_timeout_in_minutes,
+            keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
+            refresh_after_expire=False
+    ):
         """
         Create a new channel for events.
 
@@ -101,7 +106,7 @@ class O365StreamingNotifications(O365Notifications):
         :param bool refresh_after_expire: refresh when http connection expires
         """
         if not subscriptions:
-            raise ValueError('Can\'t start streaming connection without subscription.')
+            raise ValueError("Can't start streaming connection without subscription.")
         elif not isinstance(subscriptions, list):
             subscriptions = [subscriptions]
 
