@@ -12,7 +12,7 @@ look into its documentation for advance setups.
 
 ## Notification strategies
 
-As mentioned, there currently 2 supported notification types in O365: push and streaming.
+As mentioned, there currently 2 supported notification types in O365: _push_ and _streaming_.
 
 As of now, this project relies on Outlook REST Beta API. But because this API is now deprecated and will be
 decommissioned, a transition to Microsoft Graph API is required. See [this](#Important-note-⚠️) section for more
