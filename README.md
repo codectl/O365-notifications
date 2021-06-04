@@ -69,12 +69,15 @@ afterwards.
 
 Push notifications will be shifted to Microsoft Graph, and go under the name of _change notifications_. Its
 documentation can be found [here](https://docs.microsoft.com/en-us/graph/api/resources/webhooks?view=graph-rest-1.0).
-Transitioning to the Microsoft Graph should be simple and straightforward.
+
+Transitioning to the Microsoft Graph should be a simple and straightforward task.
 
 #### Streaming notifications
 
-Unfortunately Microsoft will not port the service to Microsoft Graph. Therefore, as of November 2022, that
-implementation will be obsolete. More details on that can be
+Unfortunately Microsoft will not port this service to Microsoft Graph. Therefore, as of November 2022, the
+current implementation in this project will be obsolete.
+
+More details on that can be
 found [here](https://docs.microsoft.com/en-us/outlook/rest/compare-graph).
 
 ## Requirements
