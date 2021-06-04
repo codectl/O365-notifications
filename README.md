@@ -74,10 +74,8 @@ Transitioning to the Microsoft Graph should be a simple and straightforward task
 
 #### Streaming notifications
 
-Unfortunately Microsoft will not port this service to Microsoft Graph. Therefore, as of November 2022, the
-current implementation in this project will be obsolete.
-
-More details on that can be
+Unfortunately Microsoft will not port this service to Microsoft Graph. Therefore, as of November 2022, the current
+implementation in this project will be obsolete. More details on that can be
 found [here](https://docs.microsoft.com/en-us/outlook/rest/compare-graph).
 
 ## Requirements
