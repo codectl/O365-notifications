@@ -12,14 +12,14 @@ class O365MailBoxStreamingNotifications(O365StreamingNotifications):
 
         super().__init__(parent=parent, **kwargs)
 
-    def resource_namespace(self, resource: Folder) -> str:
+    def resource_namespace(self, folder: Folder) -> str:
         """Get the full resource namespace for the folder resource."""
-        if not isinstance(resource, Folder):
+        if not isinstance(folder, Folder):
             raise ValueError("'resource' must be instance of Folder")
 
-        endpoints = resource._endpoints
-        return resource.build_url(
-            endpoints.get("folder_messages").format(id=resource.folder_id)
-            if resource
+        endpoints = folder._endpoints
+        return folder.build_url(
+            endpoints.get("folder_messages").format(id=folder.folder_id)
+            if folder
             else endpoints.get("root_messages")
         )
