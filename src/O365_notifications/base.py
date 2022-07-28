@@ -8,8 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class O365Notification(ApiComponent):
-    """ O365 Notification """
-
     class Type(Enum):
         O365_NOTIFICATION = '#Microsoft.OutlookServices.Notification'
         O365_STREAMING_SUBSCRIPTION = '#Microsoft.OutlookServices.StreamingSubscription'
