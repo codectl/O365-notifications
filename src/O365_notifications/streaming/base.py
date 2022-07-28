@@ -6,7 +6,7 @@ from abc import abstractmethod
 from O365_notifications.base import (
     O365Notification,
     O365Notifications,
-    O365NotificationsHandler
+    O365NotificationsHandler,
 )
 
 logger = logging.getLogger(__name__)
@@ -19,10 +19,10 @@ class O365StreamingNotification(O365Notification):
 
 class O365StreamingNotifications(O365Notifications):
     _endpoints = {
-        'subscriptions': '/subscriptions',
-        'notifications': '/GetNotifications'
+        "subscriptions": "/subscriptions",
+        "notifications": "/GetNotifications",
     }
-    _request_type = '#Microsoft.OutlookServices.StreamingSubscription'
+    _request_type = "#Microsoft.OutlookServices.StreamingSubscription"
     streaming_notification_constructor = O365StreamingNotification
 
     # Streaming connection settings
@@ -54,25 +54,25 @@ class O365StreamingNotifications(O365Notifications):
         :param: resource: the resource to subscribe to
         :return: the subscription id
         """
-        url = self.build_url(self._endpoints.get('subscriptions'))
+        url = self.build_url(self._endpoints.get("subscriptions"))
 
         if resource not in self.subscribed_resources:
             self.subscribed_resources.append(resource)
         resource_namespace = self.resource_namespace(resource)
 
         data = {
-            '@odata.type': self.request_type,
-            self._cc('resource'): resource_namespace,
-            self._cc('changeType'): self.change_type
+            "@odata.type": self.request_type,
+            self._cc("resource"): resource_namespace,
+            self._cc("changeType"): self.change_type,
         }
 
         try:
             response = self.con.post(url, data)
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == requests.codes.too_many_requests:
-                logger.warning('Too many requests...')
+                logger.warning("Too many requests...")
                 logger.info(str(e.response.headers))
-                logger.warning('Raising exception...')
+                logger.warning("Raising exception...")
                 raise e
         else:
             if not response:
@@ -80,17 +80,17 @@ class O365StreamingNotifications(O365Notifications):
 
             notification = response.json()
 
-            logger.debug("Subscribed to resource {0}: Response: {1}".format(resource, notification))
-            return notification['Id']
+            logger.debug(f"Subscribed to resource {resource}: Response: {notification}")
+            return notification["Id"]
 
     def create_event_channel(
-            self,
-            *,
-            subscriptions,
-            notification_handler=None,
-            connection_timeout=_default_connection_timeout_in_minutes,
-            keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
-            refresh_after_expire=False
+        self,
+        *,
+        subscriptions,
+        notification_handler=None,
+        connection_timeout=_default_connection_timeout_in_minutes,
+        keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
+        refresh_after_expire=False,
     ):
         """
         Create a new channel for events.
@@ -107,26 +107,30 @@ class O365StreamingNotifications(O365Notifications):
             subscriptions = [subscriptions]
 
         notification_handler = notification_handler or O365NotificationsHandler()
-        url = self.build_url(self._endpoints.get('notifications'))
+        url = self.build_url(self._endpoints.get("notifications"))
 
         data = {
-            self._cc('connectionTimeoutInMinutes'): connection_timeout,
-            self._cc('keepAliveNotificationIntervalInSeconds'): keep_alive_interval,
-            self._cc('subscriptionIds'): subscriptions
+            self._cc("connectionTimeoutInMinutes"): connection_timeout,
+            self._cc("keepAliveNotificationIntervalInSeconds"): keep_alive_interval,
+            self._cc("subscriptionIds"): subscriptions,
         }
 
-        logger.info('Open new events channel ...')
+        logger.info("Open new events channel ...")
         while True:
             try:
                 response = self.con.post(url, data, stream=True)
-                logger.debug('Start streaming cycle ...')
+                logger.debug("Start streaming cycle ...")
 
             # Renew subscriptions if 404 is raised
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == requests.codes.not_found:
-                    logger.info('Expired subscription. Renewing subscriptions...')
-                    data[self._cc('subscriptionIds')] = self.renew_subscriptions()
-                    logger.info('Renewed subscriptions: {0}'.format(data[self._cc('subscriptionIds')]))
+                    logger.info("Expired subscription. Renewing subscriptions...")
+                    data[self._cc("subscriptionIds")] = self.renew_subscriptions()
+                    logger.info(
+                        "Renewed subscriptions: {}".format(
+                            data[self._cc("subscriptionIds")]
+                        )
+                    )
                     continue
                 else:
                     raise e
@@ -138,32 +142,38 @@ class O365StreamingNotifications(O365Notifications):
             # Exception occurs when connection is closed by the server causing
             # partially reading the request body.
             with response:
-                stream_data = b''
+                stream_data = b""
                 bracket_control = []
                 for starting_chunk in response.iter_content(chunk_size=1):
                     # Reading json group values...
-                    if starting_chunk == b'[':
+                    if starting_chunk == b"[":
                         bracket_control.append(starting_chunk)
                         try:
                             for chunk in response.iter_content(chunk_size=1):
                                 # Grouping json objects
-                                if chunk == b'{':
+                                if chunk == b"{":
                                     bracket_control.append(chunk)
-                                elif chunk == b'}':
-                                    bracket_control.remove(b'{')
-                                elif chunk == b']':
-                                    bracket_control.remove(b'[')
+                                elif chunk == b"}":
+                                    bracket_control.remove(b"{")
+                                elif chunk == b"]":
+                                    bracket_control.remove(b"[")
 
                                 # Control to see if json object is complete
-                                if b'{' in bracket_control:
+                                if b"{" in bracket_control:
                                     stream_data += chunk
-                                elif b'[' in bracket_control:
+                                elif b"[" in bracket_control:
                                     if stream_data:
-                                        stream_data += b'}'
-                                        notification = self.streaming_notification_constructor(
-                                            parent=self, **json.loads(stream_data.decode('utf-8')))
+                                        stream_data += b"}"
+                                        notification = (
+                                            self.streaming_notification_constructor(
+                                                parent=self,
+                                                **json.loads(
+                                                    stream_data.decode("utf-8")
+                                                ),
+                                            )
+                                        )
                                         notification_handler.process(notification)
-                                        stream_data = b''
+                                        stream_data = b""
                                 else:
                                     # Break outer loop
                                     bracket_control.append(True)
@@ -174,7 +184,7 @@ class O365StreamingNotifications(O365Notifications):
                                 # Seem like empty values through the connection causing
                                 # the communication to be corrupted. When that happens,
                                 # the loop is interrupted and the streaming is restarted.
-                                logger.warning("Exception suppressed: {0}".format(e))
+                                logger.warning(f"Exception suppressed: {e}")
                                 break
                             else:
                                 raise e
@@ -184,8 +194,8 @@ class O365StreamingNotifications(O365Notifications):
 
             # Automatically refresh HTTP connection after it expires
             if refresh_after_expire:
-                logger.debug('Refreshing connection ...')
+                logger.debug("Refreshing connection ...")
             else:
                 break
 
-        logger.info('Stopped listening for events: connection closed.')
+        logger.info("Stopped listening for events: connection closed.")
