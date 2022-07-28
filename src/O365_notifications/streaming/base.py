@@ -93,18 +93,18 @@ class O365StreamingNotifications(O365Notifications):
         *,
         subscriptions,
         notification_handler=None,
-        connection_timeout=_default_connection_timeout_in_minutes,
-        keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
-        refresh_after_expire=False,
+        connection_timeout: int = _default_connection_timeout_in_minutes,
+        keep_alive_interval: int = _default_keep_alive_notification_interval_in_seconds,
+        refresh_after_expire: bool = False,
     ):
         """
         Create a new channel for events.
 
         :param subscriptions: subscription id's to listen to
         :param notification_handler: the notification's handler
-        :param int connection_timeout: time in minutes in which connection closes
-        :param int keep_alive_interval: time interval in seconds in which a message is sent
-        :param bool refresh_after_expire: refresh when http connection expires
+        :param connection_timeout: time in minutes in which connection closes
+        :param keep_alive_interval: time interval in seconds in which a message is sent
+        :param refresh_after_expire: refresh when http connection expires
         :raises ValueError: if no subscription is provided
         :raises Exception: if streaming error occurs
         """
