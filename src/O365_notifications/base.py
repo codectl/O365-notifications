@@ -6,18 +6,19 @@ from O365.utils import ApiComponent
 
 logger = logging.getLogger(__name__)
 
+# base namespace for O365 resources
+O365_BASE = "#Microsoft.OutlookServices"
+
 
 class O365Notification(ApiComponent):
     class Type(Enum):
-        O365_NOTIFICATION = "#Microsoft.OutlookServices.Notification"
-        O365_STREAMING_SUBSCRIPTION = "#Microsoft.OutlookServices.StreamingSubscription"
-        O365_KEEP_ALIVE_NOTIFICATION = (
-            "#Microsoft.OutlookServices.KeepAliveNotification"
-        )
+        O365_NOTIFICATION = f"{O365_BASE}.Notification"
+        O365_STREAMING_SUBSCRIPTION = f"{O365_BASE}.StreamingSubscription"
+        O365_KEEP_ALIVE_NOTIFICATION = f"{O365_BASE}.KeepAliveNotification"
 
     class ResourceType(Enum):
-        O365_MESSAGE = "#Microsoft.OutlookServices.Message"
-        O365_EVENT = "#Microsoft.OutlookServices.Event"
+        O365_MESSAGE = f"{O365_BASE}.Message"
+        O365_EVENT = f"{O365_BASE}.Event"
 
     class ChangeType(Enum):
         ACKNOWLEDGEMENT = "Acknowledgment"
