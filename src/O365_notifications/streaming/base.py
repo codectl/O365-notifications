@@ -4,6 +4,8 @@ import requests
 import typing
 from abc import abstractmethod
 
+from O365.utils import ApiComponent
+
 from O365_notifications.base import (
     O365_BASE,
     O365Notification,
@@ -39,18 +41,20 @@ class O365StreamingNotifications(O365Notifications):
         return self._request_type
 
     @abstractmethod
-    def resource_namespace(self, resource) -> str:
-        """Get the full resource namespace for a given resource.
+    def resource_namespace(self, resource: ApiComponent) -> str:
+        """
+        Get the full resource namespace for a given resource.
 
         :param resource: the subscribable resource
-        :return the resource namespace
+        :return: the resource namespace
         """
-        return resource
+        return ""
 
-    def subscribe(self, *, resource) -> typing.Optional[str]:
-        """Subscription to a given resource.
+    def subscribe(self, *, resource: ApiComponent) -> typing.Optional[str]:
+        """
+        Subscription to a given resource.
 
-        :param: resource: the resource to subscribe to
+        :param resource: the resource to subscribe to
         :return: the subscription id
         """
         url = self.build_url(self._endpoints.get("subscriptions"))
@@ -91,13 +95,16 @@ class O365StreamingNotifications(O365Notifications):
         keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
         refresh_after_expire=False,
     ):
-        """Create a new channel for events.
+        """
+        Create a new channel for events.
 
         :param subscriptions: subscription id's to listen to
         :param notification_handler: the notification's handler
         :param int connection_timeout: time in minutes in which connection closes
         :param int keep_alive_interval: time interval in seconds in which a message is sent
         :param bool refresh_after_expire: refresh when http connection expires
+        :raises ValueError: if no subscription is provided
+        :raises Exception: if streaming error occurs
         """
         if not subscriptions:
             raise ValueError("Can't start streaming connection without subscription.")
