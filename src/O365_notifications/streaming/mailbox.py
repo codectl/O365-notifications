@@ -4,12 +4,12 @@ from o365_notifications.streaming.base import O365StreamingNotifications
 
 
 class O365MailBoxStreamingNotifications(O365StreamingNotifications):
-    """ Streaming implementation for MailBox Streaming notifications """
+    """Streaming implementation for MailBox Streaming notifications"""
 
     notifications_constructor = O365StreamingNotifications
 
     def __init__(self, *, parent, **kwargs):
-        """ Mailbox Streaming Notifications
+        """Mailbox Streaming Notifications
 
         :param parent: parent mailbox for this notification
         :type parent: Mailbox
@@ -32,5 +32,8 @@ class O365MailBoxStreamingNotifications(O365StreamingNotifications):
         if not isinstance(resource, Folder):
             raise ValueError("'resource' must be instance of Folder")
 
-        return resource.build_url(resource._endpoints.get('folder_messages').format(
-            id=resource.folder_id) if resource else resource._endpoints.get('root_messages'))
+        return resource.build_url(
+            resource._endpoints.get("folder_messages").format(id=resource.folder_id)
+            if resource
+            else resource._endpoints.get("root_messages")
+        )
