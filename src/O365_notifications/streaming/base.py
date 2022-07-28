@@ -13,6 +13,8 @@ from O365_notifications.base import (
     O365NotificationsHandler,
 )
 
+__all__ = ("O365StreamingNotification", "O365StreamingNotifications")
+
 logger = logging.getLogger(__name__)
 
 
