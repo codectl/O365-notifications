@@ -3,7 +3,7 @@ import logging
 import requests
 from abc import abstractmethod
 
-from o365_notifications.base import (
+from O365_notifications.base import (
     O365Notification,
     O365Notifications,
     O365NotificationsHandler
@@ -13,15 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class O365StreamingNotification(O365Notification):
-    """ O365 Streaming Notification """
-
     def __init__(self, parent=None, **kwargs):
         super().__init__(parent=parent, **kwargs)
 
 
 class O365StreamingNotifications(O365Notifications):
-    """ O365 Streaming Notifications """
-
     _endpoints = {
         'subscriptions': '/subscriptions',
         'notifications': '/GetNotifications'
