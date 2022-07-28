@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class O365StreamingNotification(O365Notification):
-    def __init__(self, parent=None, **kwargs):
-        super().__init__(parent=parent, **kwargs)
+    pass
 
 
 class O365StreamingNotifications(O365Notifications):
