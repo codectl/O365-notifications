@@ -42,7 +42,7 @@ class O365Notification(ApiComponent):
 
 class O365Notifications(ApiComponent):
     def __init__(self, *, parent=None, con=None, **kwargs):
-        # connection is only needed if you want to communicate with the api provider
+        # con required if communication with the api provider is needed
         self.con = getattr(parent, "con", con)
         self.parent = parent if issubclass(type(parent), O365Notifications) else None
 
@@ -67,22 +67,14 @@ class O365Notifications(ApiComponent):
         raise NotImplementedError("Subclasses must implement this method.")
 
     def renew_subscriptions(self):
-        """Renew subscriptions"""
         logger.info(f"Renew subscription for {str(self.subscribed_resources)}")
-        subscriptions = [
-            self.subscribe(resource=resource) for resource in self.subscribed_resources
-        ]
+        resources = self.subscribed_resources
+        subscriptions = [self.subscribe(resource=resource) for resource in resources]
         logger.info(f"Renewed subscriptions are {str(subscriptions)}")
         return subscriptions
 
 
 class O365NotificationsHandler:
-    """Handler meant to deal with incoming notifications"""
-
     @abstractmethod
     def process(self, notification):
-        """
-        Process a notification.
-        Override as this function simply prints the given notification.
-        """
         logger.debug(vars(notification))
