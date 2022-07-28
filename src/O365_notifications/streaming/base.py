@@ -1,9 +1,11 @@
 import json
 import logging
 import requests
+import typing
 from abc import abstractmethod
 
 from O365_notifications.base import (
+    O365_BASE,
     O365Notification,
     O365Notifications,
     O365NotificationsHandler,
@@ -22,7 +24,7 @@ class O365StreamingNotifications(O365Notifications):
         "subscriptions": "/subscriptions",
         "notifications": "/GetNotifications",
     }
-    _request_type = "#Microsoft.OutlookServices.StreamingSubscription"
+    _request_type = f"{O365_BASE}.StreamingSubscription"
     streaming_notification_constructor = O365StreamingNotification
 
     # Streaming connection settings
@@ -37,19 +39,16 @@ class O365StreamingNotifications(O365Notifications):
         return self._request_type
 
     @abstractmethod
-    def resource_namespace(self, resource):
-        """
-        Get the full resource namespace for
-        a given resource.
+    def resource_namespace(self, resource) -> str:
+        """Get the full resource namespace for a given resource.
 
         :param resource: the subscribable resource
         :return the resource namespace
         """
         return resource
 
-    def subscribe(self, *, resource):
-        """
-        Subscribing to a given resource.
+    def subscribe(self, *, resource) -> typing.Optional[str]:
+        """Subscription to a given resource.
 
         :param: resource: the resource to subscribe to
         :return: the subscription id
@@ -92,11 +91,10 @@ class O365StreamingNotifications(O365Notifications):
         keep_alive_interval=_default_keep_alive_notification_interval_in_seconds,
         refresh_after_expire=False,
     ):
-        """
-        Create a new channel for events.
+        """Create a new channel for events.
 
         :param subscriptions: subscription id's to listen to
-        :param notification_handler: the notifications handler
+        :param notification_handler: the notification's handler
         :param int connection_timeout: time in minutes in which connection closes
         :param int keep_alive_interval: time interval in seconds in which a message is sent
         :param bool refresh_after_expire: refresh when http connection expires
@@ -181,9 +179,9 @@ class O365StreamingNotifications(O365Notifications):
 
                         except Exception as e:
                             if isinstance(e, requests.exceptions.ChunkedEncodingError):
-                                # Seem like empty values through the connection causing
+                                # Seem like empty values in the connection, is causing
                                 # the communication to be corrupted. When that happens,
-                                # the loop is interrupted and the streaming is restarted.
+                                # the loop is interrupted and the streaming is restarted
                                 logger.warning(f"Exception suppressed: {e}")
                                 break
                             else:
