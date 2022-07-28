@@ -137,8 +137,8 @@ class O365StreamingNotifications(O365Notifications):
                     msg = f"Renewed subscriptions: {data[self._cc('subscriptionIds')]}"
                     logger.debug(msg)
                     continue
-                else:
-                    raise e
+                # raise for any other error
+                raise e
             else:
                 if not response:
                     return
@@ -191,8 +191,8 @@ class O365StreamingNotifications(O365Notifications):
                                 # the loop is interrupted and the streaming is restarted
                                 logger.warning(f"Exception suppressed: {e}")
                                 break
-                            else:
-                                raise e
+                            # raise for any other error
+                            raise e
                     if bracket_control:
                         # Break loop since all data is read
                         break
