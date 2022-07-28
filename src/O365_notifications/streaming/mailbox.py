@@ -1,11 +1,9 @@
 from O365.mailbox import MailBox, Folder
 
-from o365_notifications.streaming.base import O365StreamingNotifications
+from O365_notifications.streaming.base import O365StreamingNotifications
 
 
 class O365MailBoxStreamingNotifications(O365StreamingNotifications):
-    """Streaming implementation for MailBox Streaming notifications"""
-
     notifications_constructor = O365StreamingNotifications
 
     def __init__(self, *, parent, **kwargs):
