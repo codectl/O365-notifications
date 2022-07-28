@@ -54,9 +54,9 @@ class O365Notifications(ApiComponent):
         self.con = getattr(parent, "con", con)
         self.parent = parent if issubclass(type(parent), O365Notifications) else None
 
-        protocol = kwargs.get("protocol") or getattr(parent, "protocol", None)
-        main_resource = kwargs.get("main_resource") or getattr(
-            parent, "main_resource", None
+        protocol = kwargs.get("protocol", getattr(parent, "protocol", None))
+        main_resource = kwargs.get(
+            "main_resource", getattr(parent, "main_resource", None)
         )
 
         super().__init__(protocol=protocol, main_resource=main_resource)
