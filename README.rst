@@ -18,7 +18,7 @@ O365-notifications
     :target: https://opensource.org/licenses/MIT
     :alt: license: MIT
 
-**O365-notifications** is a *pythonic* implementation for the Notification services 
+**O365-notifications** is a *pythonic* implementation for the Notification services
 from Office 365. There are currently 2 ways for receiving notifications:
 
 * `Push Notifications <https://docs.microsoft.com/en-us/previous-versions/office/
@@ -65,8 +65,7 @@ on how to use it is found below:
 
     # mailbox streaming for email creation events
     mn = ms.O365MailBoxStreamingNotifications(
-        parent=mailbox,
-        change_type=base.O365Notification.ChangeType.CREATED.value
+        parent=mailbox, change_type=base.O365Notification.ChangeType.CREATED.value
     )
 
     # get an inbox folder events subscription
