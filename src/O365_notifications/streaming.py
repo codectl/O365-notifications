@@ -2,33 +2,32 @@ import json
 import logging
 import requests
 import typing
-from abc import abstractmethod
 
 from O365.utils import ApiComponent
 
+from O365_notifications import utils
 from O365_notifications.base import (
     O365_BASE,
     O365Notification,
-    O365Notifications,
+    O365Subscriber,
     O365NotificationsHandler,
 )
 
-__all__ = ("O365StreamingNotification", "O365StreamingNotifications")
+__all__ = ("O365StreamingNotification", "O365StreamingSubscriber")
 
 logger = logging.getLogger(__name__)
 
 
 class O365StreamingNotification(O365Notification):
-    def __init__(self, parent=None, **kwargs):
-        super().__init__(parent=parent, **kwargs)
+    pass
 
 
-class O365StreamingNotifications(O365Notifications):
+class O365StreamingSubscriber(O365Subscriber):
     _endpoints = {
         "subscriptions": "/subscriptions",
         "notifications": "/GetNotifications",
     }
-    _request_type = f"{O365_BASE}.StreamingSubscription"
+    _namespace = f"{O365_BASE}.StreamingSubscription"
     streaming_notification_constructor = O365StreamingNotification
 
     # Streaming connection settings
@@ -39,18 +38,8 @@ class O365StreamingNotifications(O365Notifications):
         super().__init__(parent=parent, con=con, **kwargs)
 
     @property
-    def request_type(self):
-        return self._request_type
-
-    @abstractmethod
-    def resource_namespace(self, resource: ApiComponent) -> str:
-        """
-        Get the full resource namespace for a given resource.
-
-        :param resource: the subscribable resource
-        :return: the resource namespace
-        """
-        return ""
+    def namespace(self):
+        return self._namespace
 
     def subscribe(self, *, resource: ApiComponent) -> typing.Optional[str]:
         """
@@ -61,13 +50,12 @@ class O365StreamingNotifications(O365Notifications):
         """
         url = self.build_url(self._endpoints.get("subscriptions"))
 
-        if resource not in self.subscribed_resources:
-            self.subscribed_resources.append(resource)
-        resource_namespace = self.resource_namespace(resource)
+        if resource not in self.resources:
+            self.resources.append(resource)
 
         data = {
-            "@odata.type": self.request_type,
-            self._cc("resource"): resource_namespace,
+            "@odata.type": self.namespace,
+            self._cc("resource"): utils.resolve_namespace(resource),
             self._cc("changeType"): self.change_type,
         }
 
@@ -84,14 +72,14 @@ class O365StreamingNotifications(O365Notifications):
                 return None
 
             notification = response.json()
+            self.subscriptions.append(notification["Id"])
 
-            logger.debug(f"Subscribed to resource {resource}: Response: {notification}")
-            return notification["Id"]
+            msg = f"Subscribed to resource '{resource}': Response: '{notification}'"
+            logger.debug(msg)
 
     def create_event_channel(
         self,
         *,
-        subscriptions,
         notification_handler=None,
         connection_timeout: int = _default_connection_timeout_in_minutes,
         keep_alive_interval: int = _default_keep_alive_notification_interval_in_seconds,
@@ -100,7 +88,6 @@ class O365StreamingNotifications(O365Notifications):
         """
         Create a new channel for events.
 
-        :param subscriptions: subscription id's to listen to
         :param notification_handler: the notification's handler
         :param connection_timeout: time in minutes in which connection closes
         :param keep_alive_interval: time interval in seconds in which a message is sent
@@ -108,10 +95,10 @@ class O365StreamingNotifications(O365Notifications):
         :raises ValueError: if no subscription is provided
         :raises Exception: if streaming error occurs
         """
-        if not subscriptions:
+        if not self.subscriptions:
             raise ValueError("Can't start streaming connection without subscription.")
-        elif not isinstance(subscriptions, list):
-            subscriptions = [subscriptions]
+        elif not isinstance(self.subscriptions, list):
+            subscriptions = [self.subscriptions]
 
         notification_handler = notification_handler or O365NotificationsHandler()
         url = self.build_url(self._endpoints.get("notifications"))
@@ -119,7 +106,7 @@ class O365StreamingNotifications(O365Notifications):
         data = {
             self._cc("connectionTimeoutInMinutes"): connection_timeout,
             self._cc("keepAliveNotificationIntervalInSeconds"): keep_alive_interval,
-            self._cc("subscriptionIds"): subscriptions,
+            self._cc("subscriptionIds"): self.subscriptions,
         }
 
         logger.info("Open new events channel ...")
