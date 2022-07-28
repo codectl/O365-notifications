@@ -6,6 +6,13 @@ from O365.utils import ApiComponent
 
 logger = logging.getLogger(__name__)
 
+__all__ = (
+    "O365_BASE",
+    "O365Notification",
+    "O365Notifications",
+    "O365NotificationsHandler",
+)
+
 # base namespace for O365 resources
 O365_BASE = "#Microsoft.OutlookServices"
 
