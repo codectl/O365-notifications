@@ -41,8 +41,6 @@ class O365Notification(ApiComponent):
 
 
 class O365Notifications(ApiComponent):
-    """O365 Notifications"""
-
     def __init__(self, *, parent=None, con=None, **kwargs):
         # connection is only needed if you want to communicate with the api provider
         self.con = getattr(parent, "con", con)
