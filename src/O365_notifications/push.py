@@ -1,11 +1,11 @@
-from O365_notifications.base import O365Notification, O365Notifications
+from O365_notifications.base import O365Notification, O365Subscriber
 
 
 class O365PushNotification(O365Notification):
     pass
 
 
-class O365PushNotifications(O365Notifications):
+class O365PushSubscriber(O365Subscriber):
     def subscribe(self, *, resource):
         raise NotImplementedError("TODO: must implement this method.")
 
