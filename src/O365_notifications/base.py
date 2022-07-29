@@ -7,7 +7,7 @@ from O365.utils import ApiComponent
 __all__ = (
     "O365_BASE",
     "O365Notification",
-    "O365Notifications",
+    "O365Subscriber",
     "O365NotificationsHandler",
 )
 
@@ -48,11 +48,13 @@ class O365Notification(ApiComponent):
             self.resource_data = dict(**kwargs.get(self._cc("resourceData")))
 
 
-class O365Notifications(ApiComponent):
+class O365Subscriber(ApiComponent):
+    _namespace = f"{O365_BASE}.Subscription"
+
     def __init__(self, *, parent=None, con=None, **kwargs):
         # con required if communication with the api provider is needed
         self.con = getattr(parent, "con", con)
-        self.parent = parent if issubclass(type(parent), O365Notifications) else None
+        self.parent = parent if issubclass(type(parent), self.__class__) else None
 
         protocol = kwargs.get("protocol", getattr(parent, "protocol", None))
         main_resource = kwargs.get(
@@ -65,19 +67,19 @@ class O365Notifications(ApiComponent):
         self.change_type = kwargs.get(
             "change_type", getattr(parent, "change_type", None)
         )
-        self.subscribed_resources = []
+        self.resources = []
+        self.subscriptions = []
 
     @property
-    def request_type(self):
-        raise NotImplementedError("Subclasses must implement this method.")
+    def namespace(self):
+        raise self._namespace
 
     def subscribe(self, *, resource):
         raise NotImplementedError("Subclasses must implement this method.")
 
     def renew_subscriptions(self):
-        logger.info(f"Renew subscription for {str(self.subscribed_resources)}")
-        resources = self.subscribed_resources
-        subscriptions = [self.subscribe(resource=resource) for resource in resources]
+        logger.info(f"Renew subscription for {str(self.resources)}")
+        subscriptions = [self.subscribe(resource=r) for r in self.resources]
         logger.info(f"Renewed subscriptions are {str(subscriptions)}")
         return subscriptions
 
