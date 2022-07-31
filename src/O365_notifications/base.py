@@ -10,6 +10,7 @@ from O365_notifications.utils import resolve_namespace
 __all__ = (
     "O365_BASE",
     "O365Notification",
+    "O365Subscription",
     "O365Subscriber",
     "O365NotificationsHandler",
 )
@@ -52,7 +53,7 @@ class O365Notification(ApiComponent):
 
 
 @dataclasses.dataclass
-class Subscription:
+class O365Subscription:
     id: str
     resource: ApiComponent
     events: list[O365Notification.Event]
@@ -112,7 +113,7 @@ class O365Subscriber(ApiComponent):
             subscription.events.append(events)
             subscription.raw = raw
         else:
-            subscription = Subscription(
+            subscription = O365Subscription(
                 raw["Id"],
                 resource=resource,
                 events=events,
