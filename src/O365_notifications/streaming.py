@@ -41,13 +41,8 @@ class O365StreamingSubscriber(O365Subscriber):
     def namespace(self):
         return self._namespace
 
-    def subscribe(self, *, resource: ApiComponent) -> typing.Optional[str]:
-        """
-        Subscription to a given resource.
-
-        :param resource: the resource to subscribe to
-        :return: the subscription id
-        """
+    def subscribe(self, *, resource: ApiComponent, event: O365Notification.Event) -> \
+            typing.Optional[str]:
         url = self.build_url(self._endpoints.get("subscriptions"))
 
         if resource not in self.resources:
@@ -56,7 +51,7 @@ class O365StreamingSubscriber(O365Subscriber):
         data = {
             "@odata.type": self.namespace,
             self._cc("resource"): utils.resolve_namespace(resource),
-            self._cc("changeType"): self.change_type,
+            self._cc("changeType"): self.event,
         }
 
         try:
@@ -80,7 +75,7 @@ class O365StreamingSubscriber(O365Subscriber):
     def create_event_channel(
         self,
         *,
-        notification_handler=None,
+        notification_handler: O365NotificationsHandler = None,
         connection_timeout: int = _default_connection_timeout_in_minutes,
         keep_alive_interval: int = _default_keep_alive_notification_interval_in_seconds,
         refresh_after_expire: bool = False,
@@ -97,8 +92,6 @@ class O365StreamingSubscriber(O365Subscriber):
         """
         if not self.subscriptions:
             raise ValueError("Can't start streaming connection without subscription.")
-        elif not isinstance(self.subscriptions, list):
-            subscriptions = [self.subscriptions]
 
         notification_handler = notification_handler or O365NotificationsHandler()
         url = self.build_url(self._endpoints.get("notifications"))
