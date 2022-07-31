@@ -1,8 +1,11 @@
+import abc
+import dataclasses
 import logging
-from abc import abstractmethod
 from enum import Enum
 
 from O365.utils import ApiComponent
+
+from O365_notifications.utils import resolve_namespace
 
 __all__ = (
     "O365_BASE",
@@ -27,7 +30,7 @@ class O365Notification(ApiComponent):
         O365_MESSAGE = f"{O365_BASE}.Message"
         O365_EVENT = f"{O365_BASE}.Event"
 
-    class ChangeType(Enum):
+    class Event(Enum):
         ACKNOWLEDGEMENT = "Acknowledgment"
         CREATED = "Created"
         DELETED = "Deleted"
@@ -43,13 +46,20 @@ class O365Notification(ApiComponent):
         self.type = kwargs.get("@odata.type")
         self.subscription_id = kwargs.get(self._cc("id"))
         self.resource = kwargs.get(self._cc("resource"))
-        self.change_type = kwargs.get(self._cc("changeType"))
+        self.event = kwargs.get(self._cc("changeType"))
         if kwargs.get(self._cc("resourceData")):
             self.resource_data = dict(**kwargs.get(self._cc("resourceData")))
 
 
 class O365Subscriber(ApiComponent):
     _namespace = f"{O365_BASE}.Subscription"
+
+    @dataclasses.dataclass
+    class Subscription:
+        id: str
+        resource: ApiComponent
+        events: list[O365Notification.Event]
+        raw: dict
 
     def __init__(self, *, parent=None, con=None, **kwargs):
         # con required if communication with the api provider is needed
@@ -64,27 +74,60 @@ class O365Subscriber(ApiComponent):
         super().__init__(protocol=protocol, main_resource=main_resource)
 
         self.name = kwargs.get("name", getattr(parent, "name", None))
-        self.change_type = kwargs.get(
-            "change_type", getattr(parent, "change_type", None)
-        )
-        self.resources = []
         self.subscriptions = []
 
     @property
     def namespace(self):
         raise self._namespace
 
-    def subscribe(self, *, resource):
-        raise NotImplementedError("Subclasses must implement this method.")
+    @abc.abstractmethod
+    def subscribe(self, *, resource: ApiComponent, events: list[O365Notification.Event]):
+        """
+        Subscription to a given resource.
+
+        :param resource: the resource to subscribe to
+        :param events: events type for the resource subscription
+        """
+        subscription = next(s for s in self.subscriptions if s.resource == resource)
+        if subscription:
+            events = [ev for ev in events if ev not in subscription.events]
+            if not events:
+                raise ValueError("subscription for given resource already exists")
+
+        normalize = ",".join(ev.value for ev in events)
+        data = {
+            "@odata.type": self.namespace,
+            self._cc("resource"): resolve_namespace(resource),
+            self._cc("changeType"): normalize,
+        }
+
+        url = self.build_url(self._endpoints.get("subscriptions"))
+        response = self.con.post(url, data)
+        raw = response.json()
+
+        # register subscription
+        if subscription:
+            subscription.id = raw["Id"]
+            subscription.events.append(events)
+            subscription.raw = raw
+        else:
+            subscription = self.Subscription(
+                raw["Id"],
+                resource=resource,
+                events=events,
+                raw=raw
+            )
+            self.subscriptions.append(subscription)
+        logger.debug(f"Subscribed to resource '{resource}' on events: '{events}'")
 
     def renew_subscriptions(self):
-        logger.info(f"Renew subscription for {str(self.resources)}")
-        subscriptions = [self.subscribe(resource=r) for r in self.resources]
-        logger.info(f"Renewed subscriptions are {str(subscriptions)}")
-        return subscriptions
+        names = ", ".join(f"'{s.resource}'" for s in self.subscriptions)
+        logger.info(f"Renewing subscriptions for {names} ...")
+        map(lambda s: self.subscribe(resource=s.resource, events=s.events), self.subscriptions)
+        logger.info(f"Subscriptions renewed.")
 
 
 class O365NotificationsHandler:
-    @abstractmethod
+    @abc.abstractmethod
     def process(self, notification):
         logger.debug(vars(notification))
