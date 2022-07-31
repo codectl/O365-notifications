@@ -24,9 +24,9 @@ class O365StreamingSubscriber(O365Subscriber):
         "notifications": "/GetNotifications",
     }
     _namespace = f"{O365_BASE}.StreamingSubscription"
-    streaming_notification_constructor = O365StreamingNotification
 
-    # Streaming connection settings
+    # defaults
+    streaming_notification_constructor = O365StreamingNotification
     _default_connection_timeout_in_minutes = 120  # Equivalent to 2 hours
     _default_keep_alive_notification_interval_in_seconds = 5
 
