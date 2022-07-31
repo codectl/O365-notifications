@@ -80,7 +80,6 @@ class O365Subscriber(ApiComponent):
     def namespace(self):
         raise self._namespace
 
-    @abc.abstractmethod
     def subscribe(self, *, resource: ApiComponent, events: list[O365Notification.Event]):
         """
         Subscription to a given resource.

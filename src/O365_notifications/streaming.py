@@ -37,41 +37,6 @@ class O365StreamingSubscriber(O365Subscriber):
     def __init__(self, *, parent=None, con=None, **kwargs):
         super().__init__(parent=parent, con=con, **kwargs)
 
-    @property
-    def namespace(self):
-        return self._namespace
-
-    def subscribe(self, *, resource: ApiComponent, event: O365Notification.Event) -> \
-            typing.Optional[str]:
-        url = self.build_url(self._endpoints.get("subscriptions"))
-
-        if resource not in self.resources:
-            self.resources.append(resource)
-
-        data = {
-            "@odata.type": self.namespace,
-            self._cc("resource"): utils.resolve_namespace(resource),
-            self._cc("changeType"): self.event,
-        }
-
-        try:
-            response = self.con.post(url, data)
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == requests.codes.too_many_requests:
-                logger.warning("Too many requests...")
-                logger.info(str(e.response.headers))
-                logger.warning("Raising exception...")
-                raise e
-        else:
-            if not response:
-                return None
-
-            notification = response.json()
-            self.subscriptions.append(notification["Id"])
-
-            msg = f"Subscribed to resource '{resource}': Response: '{notification}'"
-            logger.debug(msg)
-
     def create_event_channel(
         self,
         *,
