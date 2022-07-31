@@ -51,15 +51,17 @@ class O365Notification(ApiComponent):
             self.resource_data = dict(**kwargs.get(self._cc("resourceData")))
 
 
+@dataclasses.dataclass
+class Subscription:
+    id: str
+    resource: ApiComponent
+    events: list[O365Notification.Event]
+    raw: dict
+
+
 class O365Subscriber(ApiComponent):
     _namespace = f"{O365_BASE}.Subscription"
-
-    @dataclasses.dataclass
-    class Subscription:
-        id: str
-        resource: ApiComponent
-        events: list[O365Notification.Event]
-        raw: dict
+    _endpoints = {"subscriptions": "/subscriptions"}
 
     def __init__(self, *, parent=None, con=None, **kwargs):
         # con required if communication with the api provider is needed
@@ -110,7 +112,7 @@ class O365Subscriber(ApiComponent):
             subscription.events.append(events)
             subscription.raw = raw
         else:
-            subscription = self.Subscription(
+            subscription = Subscription(
                 raw["Id"],
                 resource=resource,
                 events=events,
