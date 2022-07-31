@@ -19,11 +19,11 @@ class O365StreamingNotification(O365Notification):
 
 
 class O365StreamingSubscriber(O365Subscriber):
+    _namespace = f"{O365_BASE}.StreamingSubscription"
     _endpoints = {
         "subscriptions": "/subscriptions",
         "notifications": "/GetNotifications",
     }
-    _namespace = f"{O365_BASE}.StreamingSubscription"
 
     # defaults
     streaming_notification_constructor = O365StreamingNotification
