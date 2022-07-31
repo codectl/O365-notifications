@@ -1,11 +1,7 @@
 import json
 import logging
 import requests
-import typing
 
-from O365.utils import ApiComponent
-
-from O365_notifications import utils
 from O365_notifications.base import (
     O365_BASE,
     O365Notification,
