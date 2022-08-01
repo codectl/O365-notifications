@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class O365StreamingNotification(O365Notification):
-    pass
+    def __int__(self):
+        super().__int__()
 
 
 class O365StreamingSubscriber(O365Subscriber):
@@ -26,7 +27,6 @@ class O365StreamingSubscriber(O365Subscriber):
     }
 
     # defaults
-    streaming_notification_constructor = O365StreamingNotification
     _default_connection_timeout_in_minutes = 120  # Equivalent to 2 hours
     _default_keep_alive_notification_interval_in_seconds = 5
 
@@ -108,9 +108,8 @@ class O365StreamingSubscriber(O365Subscriber):
                                     if stream_data:
                                         stream_data += b"}"
                                         notification = (
-                                            self.streaming_notification_constructor(
-                                                parent=self,
-                                                **json.loads(
+                                            O365StreamingNotification(
+                                                raw=json.loads(
                                                     stream_data.decode("utf-8")
                                                 ),
                                             )
