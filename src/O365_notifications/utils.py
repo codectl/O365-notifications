@@ -3,7 +3,7 @@ import typing
 import O365.mailbox
 
 
-def resolve_namespace(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
+def build_url(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
     if isinstance(resource, O365.mailbox.Folder):
         folder = resource
         endpoints = folder._endpoints
