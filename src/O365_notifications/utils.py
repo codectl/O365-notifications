@@ -1,9 +1,10 @@
 import typing
 
 import O365.mailbox
+from marshmallow import Schema
 
 
-def resolve_namespace(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
+def build_url(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
     if isinstance(resource, O365.mailbox.Folder):
         folder = resource
         endpoints = folder._endpoints
@@ -15,3 +16,10 @@ def resolve_namespace(resource: O365.utils.ApiComponent) -> typing.Optional[str]
     # TODO: complete this check sequence as needed
 
     return None
+
+
+class DeserializerSchema(Schema):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        for field in self.declared_fields.values():
+            field.load_only = True
