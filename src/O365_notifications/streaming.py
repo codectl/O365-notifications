@@ -15,20 +15,21 @@ logger = logging.getLogger(__name__)
 
 
 class O365StreamingNotification(O365Notification):
-    def __int__(self):
-        super().__int__()
+    pass
 
 
 class O365StreamingSubscriber(O365Subscriber):
-    _namespace = f"{O365_BASE}.StreamingSubscription"
+
+    _default_connection_timeout_in_minutes = 120  # Equivalent to 2 hours
+    _default_keep_alive_notification_interval_in_seconds = 5
     _endpoints = {
         "subscriptions": "/subscriptions",
         "notifications": "/GetNotifications",
     }
 
-    # defaults
-    _default_connection_timeout_in_minutes = 120  # Equivalent to 2 hours
-    _default_keep_alive_notification_interval_in_seconds = 5
+    @property
+    def namespace(self):
+        return self.namespace
 
     def create_event_channel(
         self,
