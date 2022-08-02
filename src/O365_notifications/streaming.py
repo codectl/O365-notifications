@@ -3,7 +3,6 @@ import logging
 import requests
 
 from O365_notifications.base import (
-    O365_BASE,
     O365Notification,
     O365Subscriber,
     O365NotificationsHandler,
@@ -15,27 +14,25 @@ logger = logging.getLogger(__name__)
 
 
 class O365StreamingNotification(O365Notification):
-    def __int__(self):
-        super().__int__()
+    pass
 
 
 class O365StreamingSubscriber(O365Subscriber):
-    _namespace = f"{O365_BASE}.StreamingSubscription"
     _endpoints = {
         "subscriptions": "/subscriptions",
         "notifications": "/GetNotifications",
     }
 
-    # defaults
-    _default_connection_timeout_in_minutes = 120  # Equivalent to 2 hours
-    _default_keep_alive_notification_interval_in_seconds = 5
+    @property
+    def subscription_type(self):
+        return self.namespace.O365SubscriptionType.STREAMING_SUBSCRIPTION
 
     def create_event_channel(
         self,
         *,
         notification_handler: O365NotificationsHandler = None,
-        connection_timeout: int = _default_connection_timeout_in_minutes,
-        keep_alive_interval: int = _default_keep_alive_notification_interval_in_seconds,
+        connection_timeout: int = 120,  # equivalent to 2 hours
+        keep_alive_interval: int = 5,  # in seconds
         refresh_after_expire: bool = False,
     ):
         """
