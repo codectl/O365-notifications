@@ -39,7 +39,7 @@ class O365Subscription(ABC):
     class BaseO365SubscriptionSchema(Schema):
         id = fields.String(data_key="Id")
         type = fields.String(data_key="@odata.type")
-        resource = fields.String(data_key="Resource")
+        resource = fields.String(data_key="Resource", dump_only=True)
         events = fields.String(data_key="ChangeType")
 
         @pre_dump
@@ -103,20 +103,14 @@ class O365Subscriber(ApiComponent, ABC):
             type=self.subscription_type,
             resource=resource,
             events=events
-        )
-        normalize = ",".join(ev.value for ev in events)
-        data = {
-            "@odata.type": self.subscription_type,
-            self._cc("resource"): build_url(resource),
-            self._cc("changeType"): normalize,
-        }
+        ).serialize()
 
         url = self.build_url(self._endpoints.get("subscriptions"))
         response = self.con.post(url, data)
         raw = response.json()
 
         # register subscription
-        subscription = O365Subscription.deserialize(raw)
+        subscription = O365Subscription.deserialize({"resource": resource, **raw})
         if update:
             update.id = subscription.id
             update.events.append(events)
