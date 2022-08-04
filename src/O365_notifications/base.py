@@ -80,9 +80,8 @@ class O365Subscriber(ApiComponent, ABC):
         self.namespace = O365Namespace(protocol=protocol)
         self.subscriptions = []
 
-    @property
     @abstractmethod
-    def subscription_type(self) -> O365Namespace.O365SubscriptionType:
+    def subscription_constructor(self, **kwargs) -> O365Subscription:
         pass
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
@@ -98,8 +97,7 @@ class O365Subscriber(ApiComponent, ABC):
             if not events:
                 raise ValueError("subscription for given resource already exists")
 
-        data = O365Subscription(
-            type=self.subscription_type,
+        data = self.subscription_constructor(
             resource=resource,
             events=events
         ).serialize()
