@@ -25,7 +25,6 @@ class O365Notification(ABC):
 
     class BaseO365NotificationSchema(DeserializerSchema):
         type = fields.String(data_key="@odata.type")
-        raw = fields.Raw()
 
 
 @dataclass
@@ -37,7 +36,7 @@ class O365Subscription(ABC):
     raw: dict = None
 
     class BaseO365SubscriptionSchema(Schema):
-        id = fields.String(data_key="Id")
+        id = fields.String(data_key="Id", load_only=True)
         type = fields.String(data_key="@odata.type")
         resource = fields.String(data_key="Resource", dump_only=True)
         events = fields.String(data_key="ChangeType")
