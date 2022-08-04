@@ -8,6 +8,7 @@ from O365_notifications.base import (
     O365Subscription,
     O365NotificationsHandler,
 )
+from O365_notifications.constants import O365Namespace
 
 __all__ = ("O365StreamingNotification", "O365StreamingSubscriber")
 
@@ -29,8 +30,9 @@ class O365StreamingSubscriber(O365Subscriber):
     }
 
     def subscription_constructor(self, **kwargs) -> O365StreamingSubscription:
-        stype = self.namespace.O365SubscriptionType.STREAMING_SUBSCRIPTION
-        return O365StreamingSubscription(**{"type": stype, **kwargs})
+        ns = O365Namespace.from_protocol(protocol=self.protocol)
+        t = ns.O365SubscriptionType.STREAMING_SUBSCRIPTION
+        return O365StreamingSubscription(**{"type": t, **kwargs})
 
     def create_event_channel(
         self,
