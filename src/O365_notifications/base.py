@@ -1,3 +1,4 @@
+import datetime
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -19,38 +20,84 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class O365Notification(ABC):
+class O365BaseNotification(ABC):
     type: O365Namespace.O365NotificationType
     raw: dict
 
     class BaseO365NotificationSchema(DeserializerSchema):
-        type = fields.String(data_key="@odata.type")
+        type = fields.Str(data_key="@odata.type")
+
+    schema = BaseO365NotificationSchema  # alias
+
+
+@dataclass
+class O365Notification(O365BaseNotification):
+    id: str
+    subscription_id: str
+    subscription_expire: datetime
+    sequence: int
+    event: O365EventType
+
+    @dataclass
+    class O365ResourceData:
+        type: O365Namespace.O365ResourceDataType
+        url: str
+        etag: str
+        id: str
+
+    class O365NotificationSchema(O365BaseNotification.schema):
+        id = fields.Str(data_key="Id")
+        subscription_id = fields.Str(data_key="SubscriptionId")
+        subscription_expire = fields.DateTime(data_key="SubscriptionExpirationDateTime")
+        sequence = fields.Int(data_key="SequenceNumber")
+        event = fields.Str(data_key="ChangeType")
+        resource = fields.Nested(Schema.from_dict({
+            "type": fields.Str(data_key="@odata.type"),
+            "url": fields.Url(data_key="@odata.id"),
+            "etag": fields.Str(data_key="@odata.etag"),
+            "id": fields.Str(data_key="Id"),
+        }), data_key="ResourceData")
+
+        @post_load
+        def post_load(self, data):
+            ns = O365Namespace.from_type(data["type"])
+            data["type"] = ns.O365NotificationType.NOTIFICATION
+            data["event"] = O365EventType(data["event"])
+            data["resource"]["type"] = ns.O365ResourceDataType(data["resource"]["type"])
+            return super(**data)
+
+    resource: O365ResourceData
+    schema = O365NotificationSchema  # alias
+
+    @classmethod
+    def deserialize(cls, data: dict):
+        return cls.schema().load(data)
 
 
 @dataclass
 class O365Subscription(ABC):
     type: O365Namespace.O365SubscriptionType
-    resource: ApiComponent
+    resource_url: str
     events: list[O365EventType]
     id: str = None
     raw: dict = None
 
     class BaseO365SubscriptionSchema(Schema):
-        id = fields.String(data_key="Id", load_only=True)
-        type = fields.String(data_key="@odata.type")
-        resource = fields.String(data_key="Resource", dump_only=True)
-        events = fields.String(data_key="ChangeType")
+        id = fields.Str(data_key="Id", load_only=True)
+        type = fields.Str(data_key="@odata.type")
+        resource_url = fields.Str(data_key="Resource")
+        events = fields.Str(data_key="ChangeType")
 
         @pre_dump
-        def serialize(self, data):
+        def pre_dump(self, data):
             data["type"] = data["type"].value
-            data["resource"] = build_url(data["resource"])
             data["events"] = ",".join(e.value for e in data["events"])
             return data
 
         @post_load
-        def deserialize(self, data):
-            data["type"] = O365Namespace.O365SubscriptionType(data["type"])
+        def post_load(self, data):
+            ns = O365Namespace.from_type(data["type"])
+            data["type"] = ns.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
             return super(**data)
 
@@ -77,12 +124,10 @@ class O365Subscriber(ApiComponent, ABC):
 
         self.con = getattr(parent, "con", con)  # communication with the api provider
         self.parent = parent if issubclass(type(parent), self.__class__) else None
-        self.namespace = O365Namespace(protocol=protocol)
         self.subscriptions = []
 
-    @property
     @abstractmethod
-    def subscription_type(self) -> O365Namespace.O365SubscriptionType:
+    def subscription_constructor(self, **kwargs) -> O365Subscription:
         pass
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
@@ -98,9 +143,9 @@ class O365Subscriber(ApiComponent, ABC):
             if not events:
                 raise ValueError("subscription for given resource already exists")
 
-        data = O365Subscription(
-            type=self.subscription_type,
-            resource=resource,
+        data = self.subscription_constructor(
+            parent=self,
+            resource_url=build_url(resource),
             events=events
         ).serialize()
 
@@ -109,7 +154,7 @@ class O365Subscriber(ApiComponent, ABC):
         raw = response.json()
 
         # register subscription
-        subscription = O365Subscription.deserialize({"resource": resource, **raw})
+        subscription = O365Subscription.deserialize({**raw, "raw": raw})
         if update:
             update.id = subscription.id
             update.events.append(events)
@@ -127,5 +172,5 @@ class O365Subscriber(ApiComponent, ABC):
 
 class O365NotificationsHandler:
     @abstractmethod
-    def process(self, notification):
+    def process(self, notification: O365Notification):
         logger.debug(vars(notification))

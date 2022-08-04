@@ -14,7 +14,7 @@ class O365Namespace:
         PUSH_SUBSCRIPTION = "{base}.PushSubscription"
         STREAMING_SUBSCRIPTION = "{base}.StreamingSubscription"
 
-    class O365NotificationType(Enum, O365SubscriptionType):
+    class O365NotificationType(Enum):
         NOTIFICATION = "{base}.Notification"
         KEEP_ALIVE_NOTIFICATION = "{base}.KeepAliveNotification"
 
@@ -23,13 +23,22 @@ class O365Namespace:
         EVENT = "{base}.Event"
         MESSAGE = "{base}.Message"
 
-    def __init__(self, protocol: Protocol):
-        base = self.O365Protocol[protocol.__class__.__name__].value
+    def __init__(self, base):
         attrs = (getattr(self, attr) for attr in dir(self))
         enums = (a for a in attrs if isinstance(a, type) and issubclass(a, Enum))
         for enum in enums:
             kv = {e.name: e.value.format(base=base) for e in enum}
             setattr(self, enum.__name__, Enum(enum.__name__, kv))
+
+    @classmethod
+    def from_protocol(cls, protocol: Protocol):
+        base = cls.O365Protocol[protocol.__class__.__name__].value
+        return cls(base=base)
+
+    @classmethod
+    def from_type(cls, value: str):
+        base = next((p.value for p in cls.O365Protocol if value.startswith(p.value)), "")
+        return cls(base=base)
 
 
 class O365EventType(Enum):
