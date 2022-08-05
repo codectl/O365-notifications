@@ -10,10 +10,11 @@ from O365_notifications.utils import build_url, DeserializerSchema, Schema
 from O365_notifications.constants import O365EventType, O365Namespace
 
 __all__ = (
+    "O365BaseNotification",
+    "O365BaseSubscription",
     "O365Notification",
-    "O365Subscription",
-    "O365Subscriber",
     "O365NotificationsHandler",
+    "O365Subscriber",
 )
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,21 @@ class O365BaseNotification(ABC):
     class BaseO365NotificationSchema(DeserializerSchema):
         type = fields.Str(data_key="@odata.type")
 
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.ns = None
+
+        @post_load
+        def post_load(self, data):
+            self.ns = O365Namespace.from_type(data["type"])
+            data["type"] = self.ns.O365NotificationType(data["type"])
+            return super(**data)
+
     schema = BaseO365NotificationSchema  # alias
+
+    @classmethod
+    def deserialize(cls, data: dict):
+        return cls.schema().load(data)
 
 
 @dataclass
@@ -65,7 +80,7 @@ class O365Notification(O365BaseNotification):
 
         @post_load
         def post_load(self, data):
-            ns = O365Namespace.from_type(data["type"])
+            ns = self.ns
             data["type"] = ns.O365NotificationType.NOTIFICATION
             data["event"] = O365EventType(data["event"])
             data["resource"]["type"] = ns.O365ResourceDataType(data["resource"]["type"])
@@ -74,13 +89,9 @@ class O365Notification(O365BaseNotification):
     resource: O365ResourceData
     schema = O365NotificationSchema  # alias
 
-    @classmethod
-    def deserialize(cls, data: dict):
-        return cls.schema().load(data)
-
 
 @dataclass
-class O365Subscription(ABC):
+class O365BaseSubscription(ABC):
     type: O365Namespace.O365SubscriptionType
     resource_url: str
     events: list[O365EventType]
@@ -132,7 +143,11 @@ class O365Subscriber(ApiComponent, ABC):
         self.subscriptions = []
 
     @abstractmethod
-    def subscription_constructor(self, **kwargs) -> O365Subscription:
+    def subscription_factory(self, **kwargs) -> O365BaseSubscription:
+        pass
+
+    @abstractmethod
+    def notification_factory(self, **kwargs) -> O365BaseNotification:
         pass
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
@@ -148,7 +163,8 @@ class O365Subscriber(ApiComponent, ABC):
             if not events:
                 raise ValueError("subscription for given resource already exists")
 
-        data = self.subscription_constructor(
+        subscription_cls = self.subscription_factory
+        data = subscription_cls(
             parent=self, resource_url=build_url(resource), events=events
         ).serialize()
 
@@ -157,7 +173,7 @@ class O365Subscriber(ApiComponent, ABC):
         raw = response.json()
 
         # register subscription
-        subscription = O365Subscription.deserialize({**raw, "raw": raw})
+        subscription = subscription_cls().deserialize({**raw, "raw": raw})
         if update:
             update.id = subscription.id
             update.events.append(events)
@@ -178,5 +194,5 @@ class O365Subscriber(ApiComponent, ABC):
 
 class O365NotificationsHandler:
     @abstractmethod
-    def process(self, notification: O365Notification):
+    def process(self, notification: O365BaseNotification):
         logger.debug(vars(notification))
