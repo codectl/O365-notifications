@@ -154,7 +154,7 @@ class O365Subscriber(ApiComponent, ABC):
         raw = response.json()
 
         # register subscription
-        subscription = O365Subscription.deserialize(**raw)
+        subscription = O365Subscription.deserialize({**raw, "raw": raw})
         if update:
             update.id = subscription.id
             update.events.append(events)
