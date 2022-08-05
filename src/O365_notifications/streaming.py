@@ -2,20 +2,32 @@ import json
 import logging
 import requests
 
+from marshmallow import fields, post_load
+
 from O365_notifications.base import (
+    O365BaseNotification,
+    O365BaseSubscription,
     O365Notification,
     O365Subscriber,
-    O365Subscription,
     O365NotificationsHandler,
 )
 from O365_notifications.constants import O365Namespace
 
-__all__ = ("O365StreamingNotification", "O365StreamingSubscriber")
+__all__ = ("O365StreamingSubscription", "O365StreamingSubscriber")
 
 logger = logging.getLogger(__name__)
 
 
-class O365StreamingSubscription(O365Subscription):
+class O365KeepAliveNotification(O365BaseNotification):
+    status: str
+
+    class O365KeepAliveNotificationSchema(O365BaseNotification.schema):
+        status = fields.Str(data_key="Status")
+
+    schema = O365KeepAliveNotificationSchema  # alias
+
+
+class O365StreamingSubscription(O365BaseSubscription):
     pass
 
 
@@ -25,10 +37,19 @@ class O365StreamingSubscriber(O365Subscriber):
         "notifications": "/GetNotifications",
     }
 
-    def subscription_constructor(self, **kwargs) -> O365StreamingSubscription:
-        ns = O365Namespace.from_protocol(protocol=self.protocol)
-        t = ns.O365SubscriptionType.STREAMING_SUBSCRIPTION
-        return O365StreamingSubscription(**{"type": t, **kwargs})
+    def __int__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.ns = O365Namespace.from_protocol(protocol=self.protocol)
+
+    def subscription_factory(self, data) -> O365StreamingSubscription:
+        return O365StreamingSubscription.deserialize(data)
+
+    def notification_factory(self, data) -> O365BaseNotification:
+        base = O365BaseNotification.schema().load(**data)
+        if base.type == self.ns.O365NotificationType.NOTIFICATION:
+            return O365Notification.deserialize(data)
+        elif base.type == self.ns.O365NotificationType.KEEP_ALIVE_NOTIFICATION:
+            return O365KeepAliveNotification.deserialize(data)
 
     def create_event_channel(
         self,
@@ -108,6 +129,7 @@ class O365StreamingSubscriber(O365Subscriber):
                                     if stream_data:
                                         stream_data += b"}"
                                         raw = json.loads(stream_data.decode("utf-8"))
+                                        notification = self.notification_factory(raw)
                                         notification = O365Notification.deserialize(
                                             {**raw, "raw": raw}
                                         )
