@@ -143,11 +143,11 @@ class O365Subscriber(ApiComponent, ABC):
         self.subscriptions = []
 
     @abstractmethod
-    def subscription_factory(self, **kwargs) -> O365BaseSubscription:
+    def subscription_constructor(self, **kwargs) -> O365BaseSubscription:
         pass
 
     @abstractmethod
-    def notification_factory(self, **kwargs) -> O365BaseNotification:
+    def notification_factory(self, data) -> O365BaseNotification:
         pass
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
@@ -163,8 +163,7 @@ class O365Subscriber(ApiComponent, ABC):
             if not events:
                 raise ValueError("subscription for given resource already exists")
 
-        subscription_cls = self.subscription_factory
-        data = subscription_cls(
+        data = self.subscription_constructor(
             parent=self, resource_url=build_url(resource), events=events
         ).serialize()
 
@@ -173,7 +172,7 @@ class O365Subscriber(ApiComponent, ABC):
         raw = response.json()
 
         # register subscription
-        subscription = subscription_cls().deserialize({**raw, "raw": raw})
+        subscription = self.subscription_constructor().deserialize({**raw, "raw": raw})
         if update:
             update.id = subscription.id
             update.events.append(events)
