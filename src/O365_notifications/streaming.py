@@ -91,9 +91,9 @@ class O365StreamingSubscriber(O365Subscriber):
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == requests.codes.not_found:
                     logger.debug("Expired subscription. Renewing subscriptions...")
-                    data[self._cc("subscriptionIds")] = self.renew_subscriptions()
-
-                    msg = f"Renewed subscriptions: {data[self._cc('subscriptionIds')]}"
+                    renewed_ids = [s.id for s in self.renew_subscriptions()]
+                    request_schema["SubscriptionIds"] = renewed_ids
+                    msg = f"Renewed subscriptions: {renewed_ids}"
                     logger.debug(msg)
                     continue
                 # raise for any other error
