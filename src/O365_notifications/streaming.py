@@ -41,8 +41,8 @@ class O365StreamingSubscriber(O365Subscriber):
         super().__init__(**kwargs)
         self.ns = O365Namespace.from_protocol(protocol=self.protocol)
 
-    def subscription_factory(self, data) -> O365StreamingSubscription:
-        return O365StreamingSubscription.deserialize(data)
+    def subscription_constructor(self, **kwargs) -> O365StreamingSubscription:
+        return O365StreamingSubscription(**kwargs)
 
     def notification_factory(self, data) -> O365BaseNotification:
         base = O365BaseNotification.schema().load(**data)
@@ -70,7 +70,7 @@ class O365StreamingSubscriber(O365Subscriber):
         :raises Exception: if streaming error occurs
         """
         if not self.subscriptions:
-            raise ValueError("Can't start streaming connection without subscription.")
+            raise ValueError("can't start a streaming connection without subscription.")
 
         notification_handler = notification_handler or O365NotificationsHandler()
         url = self.build_url(self._endpoints.get("notifications"))
