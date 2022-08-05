@@ -188,7 +188,7 @@ class O365Subscriber(ApiComponent, ABC):
             lambda s: self.subscribe(resource=s.resource, events=s.events),
             self.subscriptions,
         )
-        logger.info(f"Subscriptions renewed.")
+        logger.info("Subscriptions renewed.")
 
 
 class O365NotificationsHandler:
