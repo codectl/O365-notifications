@@ -51,12 +51,17 @@ class O365Notification(O365BaseNotification):
         subscription_expire = fields.DateTime(data_key="SubscriptionExpirationDateTime")
         sequence = fields.Int(data_key="SequenceNumber")
         event = fields.Str(data_key="ChangeType")
-        resource = fields.Nested(Schema.from_dict({
-            "type": fields.Str(data_key="@odata.type"),
-            "url": fields.Url(data_key="@odata.id"),
-            "etag": fields.Str(data_key="@odata.etag"),
-            "id": fields.Str(data_key="Id"),
-        }), data_key="ResourceData")
+        resource = fields.Nested(
+            Schema.from_dict(
+                {
+                    "type": fields.Str(data_key="@odata.type"),
+                    "url": fields.Url(data_key="@odata.id"),
+                    "etag": fields.Str(data_key="@odata.etag"),
+                    "id": fields.Str(data_key="Id"),
+                }
+            ),
+            data_key="ResourceData",
+        )
 
         @post_load
         def post_load(self, data):
@@ -144,9 +149,7 @@ class O365Subscriber(ApiComponent, ABC):
                 raise ValueError("subscription for given resource already exists")
 
         data = self.subscription_constructor(
-            parent=self,
-            resource_url=build_url(resource),
-            events=events
+            parent=self, resource_url=build_url(resource), events=events
         ).serialize()
 
         url = self.build_url(self._endpoints.get("subscriptions"))
@@ -166,7 +169,10 @@ class O365Subscriber(ApiComponent, ABC):
     def renew_subscriptions(self):
         names = ", ".join(f"'{s.resource}'" for s in self.subscriptions)
         logger.info(f"Renewing subscriptions for {names} ...")
-        map(lambda s: self.subscribe(resource=s.resource, events=s.events), self.subscriptions)
+        map(
+            lambda s: self.subscribe(resource=s.resource, events=s.events),
+            self.subscriptions,
+        )
         logger.info(f"Subscriptions renewed.")
 
 
