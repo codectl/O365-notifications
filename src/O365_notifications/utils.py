@@ -10,7 +10,8 @@ def build_url(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
         endpoints = folder._endpoints
         return folder.build_url(
             endpoints.get("folder_messages").format(id=folder.folder_id)
-            if folder else endpoints.get("root_messages")
+            if folder
+            else endpoints.get("root_messages")
         )
 
     # TODO: complete this check sequence as needed

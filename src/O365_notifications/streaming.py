@@ -15,10 +15,6 @@ __all__ = ("O365StreamingNotification", "O365StreamingSubscriber")
 logger = logging.getLogger(__name__)
 
 
-class O365StreamingNotification(O365Notification):
-    pass
-
-
 class O365StreamingSubscription(O365Subscription):
     pass
 
@@ -111,12 +107,9 @@ class O365StreamingSubscriber(O365Subscriber):
                                 elif b"[" in bracket_control:
                                     if stream_data:
                                         stream_data += b"}"
-                                        notification = (
-                                            O365StreamingNotification(
-                                                raw=json.loads(
-                                                    stream_data.decode("utf-8")
-                                                ),
-                                            )
+                                        raw = json.loads(stream_data.decode("utf-8"))
+                                        notification = O365Notification.deserialize(
+                                            {**raw, "raw": raw}
                                         )
                                         notification_handler.process(notification)
                                         stream_data = b""
