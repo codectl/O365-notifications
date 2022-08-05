@@ -37,7 +37,9 @@ class O365Namespace:
 
     @classmethod
     def from_type(cls, value: str):
-        base = next((p.value for p in cls.O365Protocol if value.startswith(p.value)), "")
+        base = next(
+            (p.value for p in cls.O365Protocol if value.startswith(p.value)), ""
+        )
         return cls(base=base)
 
 
