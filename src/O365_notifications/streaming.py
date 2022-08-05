@@ -90,11 +90,9 @@ class O365StreamingSubscriber(O365Subscriber):
             # Renew subscriptions if 404 is raised
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == requests.codes.not_found:
-                    logger.debug("Expired subscription. Renewing subscriptions...")
+                    logger.debug("Expired subscription.")
                     renewed_ids = [s.id for s in self.renew_subscriptions()]
                     request_schema["SubscriptionIds"] = renewed_ids
-                    msg = f"Renewed subscriptions: {renewed_ids}"
-                    logger.debug(msg)
                     continue
                 # raise for any other error
                 raise e
