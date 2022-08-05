@@ -172,5 +172,5 @@ class O365Subscriber(ApiComponent, ABC):
 
 class O365NotificationsHandler:
     @abstractmethod
-    def process(self, notification):
+    def process(self, notification: O365Notification):
         logger.debug(vars(notification))
