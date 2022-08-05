@@ -35,7 +35,7 @@ class O365BaseNotification(ABC):
         @post_load
         def post_load(self, data):
             data["type"] = self.namespace.O365NotificationType(data["type"])
-            return super(**data)
+            return O365BaseNotification(**data)
 
     schema = BaseO365NotificationSchema  # alias
 
@@ -84,7 +84,7 @@ class O365Notification(O365BaseNotification):
             data["resource"]["type"] = self.namespace.O365ResourceDataType(
                 data["resource"]["type"]
             )
-            return super(**data)
+            return O365Notification(**data)
 
     resource: O365ResourceData
     schema = O365NotificationSchema  # alias
@@ -118,7 +118,7 @@ class O365BaseSubscription(ABC):
         def post_load(self, data):
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
-            return super(**data)
+            return O365BaseSubscription(**data)
 
     schema = BaseO365SubscriptionSchema  # alias
 
@@ -147,7 +147,7 @@ class O365Subscriber(ApiComponent, ABC):
         self.namespace = O365Namespace.from_protocol(protocol=protocol)
         self.subscriptions = []
 
-    def subscription_factory(self, **kwargs):
+    def subscription_factory(self, **kwargs) -> O365BaseSubscription:
         return self.subscription_cls(**kwargs)
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
@@ -193,7 +193,7 @@ class O365Subscriber(ApiComponent, ABC):
         logger.info("Subscriptions renewed.")
 
 
-class O365NotificationsHandler:
+class O365NotificationsHandler(ABC):
     @abstractmethod
     def process(self, notification: O365BaseNotification):
         logger.debug(vars(notification))
