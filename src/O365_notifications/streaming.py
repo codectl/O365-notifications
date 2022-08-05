@@ -75,7 +75,7 @@ class O365StreamingSubscriber(O365Subscriber):
         notification_handler = notification_handler or O365NotificationsHandler()
         url = self.build_url(self._endpoints.get("notifications"))
 
-        data = {
+        request_schema = {
             "ConnectionTimeoutInMinutes": connection_timeout,
             "KeepAliveNotificationIntervalInSeconds": keep_alive_interval,
             "SubscriptionIds": [s.id for s in self.subscriptions],
@@ -84,7 +84,7 @@ class O365StreamingSubscriber(O365Subscriber):
         logger.info("Open new events channel ...")
         while True:
             try:
-                response = self.con.post(url, data, stream=True)
+                response = self.con.post(url, request_schema, stream=True)
                 logger.debug("Start streaming cycle ...")
 
             # Renew subscriptions if 404 is raised
