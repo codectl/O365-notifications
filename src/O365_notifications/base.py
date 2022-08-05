@@ -193,7 +193,7 @@ class O365Subscriber(ApiComponent, ABC):
         logger.info("Subscriptions renewed.")
 
 
-class O365NotificationsHandler:
+class O365NotificationsHandler(ABC):
     @abstractmethod
     def process(self, notification: O365BaseNotification):
         logger.debug(vars(notification))
