@@ -35,7 +35,7 @@ class O365BaseNotification(ABC):
         @post_load
         def post_load(self, data):
             data["type"] = self.namespace.O365NotificationType(data["type"])
-            return super(**data)
+            return O365BaseNotification(**data)
 
     schema = BaseO365NotificationSchema  # alias
 
@@ -84,7 +84,7 @@ class O365Notification(O365BaseNotification):
             data["resource"]["type"] = self.namespace.O365ResourceDataType(
                 data["resource"]["type"]
             )
-            return super(**data)
+            return O365Notification(**data)
 
     resource: O365ResourceData
     schema = O365NotificationSchema  # alias
@@ -118,7 +118,7 @@ class O365BaseSubscription(ABC):
         def post_load(self, data):
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
-            return super(**data)
+            return O365BaseSubscription(**data)
 
     schema = BaseO365SubscriptionSchema  # alias
 
