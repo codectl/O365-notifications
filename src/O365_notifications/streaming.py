@@ -2,7 +2,7 @@ import json
 import logging
 import requests
 
-from marshmallow import fields, post_load
+from marshmallow import fields
 
 from O365_notifications.base import (
     O365BaseNotification,
@@ -76,9 +76,9 @@ class O365StreamingSubscriber(O365Subscriber):
         url = self.build_url(self._endpoints.get("notifications"))
 
         data = {
-            self._cc("connectionTimeoutInMinutes"): connection_timeout,
-            self._cc("keepAliveNotificationIntervalInSeconds"): keep_alive_interval,
-            self._cc("subscriptionIds"): self.subscriptions,
+            "ConnectionTimeoutInMinutes": connection_timeout,
+            "KeepAliveNotificationIntervalInSeconds": keep_alive_interval,
+            "SubscriptionIds": [s.id for s in self.subscriptions],
         }
 
         logger.info("Open new events channel ...")
