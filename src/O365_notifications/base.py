@@ -34,7 +34,7 @@ class O365BaseNotification(ABC):
 class O365Notification(O365BaseNotification):
     id: str
     subscription_id: str
-    subscription_exp: datetime
+    subscription_expire: datetime
     sequence: int
     event: O365EventType
 
@@ -48,7 +48,7 @@ class O365Notification(O365BaseNotification):
     class O365NotificationSchema(O365BaseNotification.schema):
         id = fields.Str(data_key="Id")
         subscription_id = fields.Str(data_key="SubscriptionId")
-        subscription_exp = fields.DateTime(data_key="SubscriptionExpirationDateTime")
+        subscription_expire = fields.DateTime(data_key="SubscriptionExpirationDateTime")
         sequence = fields.Int(data_key="SequenceNumber")
         event = fields.Str(data_key="ChangeType")
         resource = fields.Nested(Schema.from_dict({
