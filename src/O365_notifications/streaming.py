@@ -40,20 +40,18 @@ class O365StreamingSubscriber(O365Subscriber):
         "subscriptions": "/subscriptions",
         "notifications": "/GetNotifications",
     }
+    subscription_cls = O365StreamingSubscription
 
-    def __int__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.ns = O365Namespace.from_protocol(protocol=self.protocol)
-
-    def subscription_constructor(self, **kwargs) -> O365StreamingSubscription:
-        return O365StreamingSubscription(**kwargs)
+    def subscription_factory(self, **kwargs) -> O365StreamingSubscription:
+        subscription_type = self.namespace.O365SubscriptionType.STREAMING_SUBSCRIPTION
+        return self.subscription_cls(**{"type": subscription_type, **kwargs})
 
     def notification_factory(self, data) -> O365BaseNotification:
-        base = O365BaseNotification.schema().load(**data)
-        if base.type == self.ns.O365NotificationType.NOTIFICATION:
-            return O365Notification.deserialize(data)
-        elif base.type == self.ns.O365NotificationType.KEEP_ALIVE_NOTIFICATION:
-            return O365KeepAliveNotification.deserialize(data)
+        base = O365BaseNotification.schema(namespace=self.namespace).load(**data)
+        if base.type == self.namespace.O365NotificationType.NOTIFICATION:
+            return O365Notification.deserialize(data, namespace=self.namespace)
+        elif base.type == self.namespace.O365NotificationType.KEEP_ALIVE_NOTIFICATION:
+            return O365KeepAliveNotification.deserialize(data, namespace=self.namespace)
 
     def create_event_channel(
         self,
@@ -132,9 +130,6 @@ class O365StreamingSubscriber(O365Subscriber):
                                         stream_data += b"}"
                                         raw = json.loads(stream_data.decode("utf-8"))
                                         notification = self.notification_factory(raw)
-                                        notification = O365Notification.deserialize(
-                                            {**raw, "raw": raw}
-                                        )
                                         notification_handler.process(notification)
                                         stream_data = b""
                                 else:

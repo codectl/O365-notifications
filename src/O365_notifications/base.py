@@ -29,20 +29,19 @@ class O365BaseNotification(ABC):
         type = fields.Str(data_key="@odata.type")
 
         def __init__(self, **kwargs):
+            self.namespace = kwargs.pop("namespace", None)
             super().__init__(**kwargs)
-            self.ns = None
 
         @post_load
         def post_load(self, data):
-            self.ns = O365Namespace.from_type(data["type"])
-            data["type"] = self.ns.O365NotificationType(data["type"])
+            data["type"] = self.namespace.O365NotificationType(data["type"])
             return super(**data)
 
     schema = BaseO365NotificationSchema  # alias
 
     @classmethod
-    def deserialize(cls, data: dict):
-        return cls.schema().load(data)
+    def deserialize(cls, data: dict, **kwargs):
+        return cls.schema(**kwargs).load(data)
 
 
 @dataclass
@@ -80,10 +79,11 @@ class O365Notification(O365BaseNotification):
 
         @post_load
         def post_load(self, data):
-            ns = self.ns
-            data["type"] = ns.O365NotificationType.NOTIFICATION
+            data["type"] = self.namespace.O365NotificationType.NOTIFICATION
             data["event"] = O365EventType(data["event"])
-            data["resource"]["type"] = ns.O365ResourceDataType(data["resource"]["type"])
+            data["resource"]["type"] = self.namespace.O365ResourceDataType(
+                data["resource"]["type"]
+            )
             return super(**data)
 
     resource: O365ResourceData
@@ -104,6 +104,10 @@ class O365BaseSubscription(ABC):
         resource_url = fields.Str(data_key="Resource")
         events = fields.Str(data_key="ChangeType")
 
+        def __init__(self, **kwargs):
+            self.namespace = kwargs.pop("namespace", None)
+            super().__init__(**kwargs)
+
         @pre_dump
         def pre_dump(self, data):
             data["type"] = data["type"].value
@@ -112,23 +116,23 @@ class O365BaseSubscription(ABC):
 
         @post_load
         def post_load(self, data):
-            ns = O365Namespace.from_type(data["type"])
-            data["type"] = ns.O365SubscriptionType(data["type"])
+            data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
             return super(**data)
 
     schema = BaseO365SubscriptionSchema  # alias
 
     @classmethod
-    def deserialize(cls, data: dict):
-        return cls.schema().load(data)
+    def deserialize(cls, data: dict, **kwargs):
+        return cls.schema(**kwargs).load(data)
 
-    def serialize(self):
-        return self.schema().dump(self)
+    def serialize(self, **kwargs):
+        return self.schema(**kwargs).dump(self)
 
 
 class O365Subscriber(ApiComponent, ABC):
     _endpoints = {"subscriptions": "/subscriptions"}
+    subscription_cls = O365BaseSubscription
 
     def __init__(self, *, parent=None, con=None, **kwargs):
         protocol = kwargs.get("protocol", getattr(parent, "protocol", None))
@@ -140,15 +144,11 @@ class O365Subscriber(ApiComponent, ABC):
 
         self.con = getattr(parent, "con", con)  # communication with the api provider
         self.parent = parent if issubclass(type(parent), self.__class__) else None
+        self.namespace = O365Namespace.from_protocol(protocol=protocol)
         self.subscriptions = []
 
-    @abstractmethod
-    def subscription_constructor(self, **kwargs) -> O365BaseSubscription:
-        pass
-
-    @abstractmethod
-    def notification_factory(self, data) -> O365BaseNotification:
-        pass
+    def subscription_factory(self, **kwargs):
+        return self.subscription_cls(**kwargs)
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
         """
@@ -163,16 +163,18 @@ class O365Subscriber(ApiComponent, ABC):
             if not events:
                 raise ValueError("subscription for given resource already exists")
 
-        data = self.subscription_constructor(
-            parent=self, resource_url=build_url(resource), events=events
+        req = self.subscription_factory(
+            resource_url=build_url(resource), events=events
         ).serialize()
 
         url = self.build_url(self._endpoints.get("subscriptions"))
-        response = self.con.post(url, data)
+        response = self.con.post(url, req)
         raw = response.json()
 
         # register subscription
-        subscription = self.subscription_constructor().deserialize({**raw, "raw": raw})
+        subscription = self.subscription_cls.deserialize(
+            {**raw, "raw": raw}, namespace=self.namespace
+        )
         if update:
             update.id = subscription.id
             update.events.append(events)
