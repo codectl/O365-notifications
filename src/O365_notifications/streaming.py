@@ -13,7 +13,11 @@ from O365_notifications.base import (
 )
 from O365_notifications.constants import O365Namespace
 
-__all__ = ("O365StreamingSubscription", "O365StreamingSubscriber")
+__all__ = (
+    "O365KeepAliveNotification",
+    "O365StreamingSubscription",
+    "O365StreamingSubscriber",
+)
 
 logger = logging.getLogger(__name__)
 
