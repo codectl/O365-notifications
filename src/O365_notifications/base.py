@@ -33,7 +33,7 @@ class O365BaseNotification(ABC):
             super().__init__(**kwargs)
 
         @post_load
-        def post_load(self, data):
+        def post_load(self, data, **_):
             data["type"] = self.namespace.O365NotificationType(data["type"])
             return O365BaseNotification(**data)
 
@@ -78,7 +78,7 @@ class O365Notification(O365BaseNotification):
         )
 
         @post_load
-        def post_load(self, data):
+        def post_load(self, data, **_):
             data["type"] = self.namespace.O365NotificationType.NOTIFICATION
             data["event"] = O365EventType(data["event"])
             data["resource"]["type"] = self.namespace.O365ResourceDataType(
@@ -109,13 +109,13 @@ class O365BaseSubscription(ABC):
             super().__init__(**kwargs)
 
         @pre_dump
-        def pre_dump(self, data):
+        def pre_dump(self, data, **_):
             data["type"] = data["type"].value
             data["events"] = ",".join(e.value for e in data["events"])
             return data
 
         @post_load
-        def post_load(self, data):
+        def post_load(self, data, **_):
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
             return O365BaseSubscription(**data)
