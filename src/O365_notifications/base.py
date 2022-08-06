@@ -109,7 +109,8 @@ class O365BaseSubscription(ABC):
             super().__init__(**kwargs)
 
         @pre_dump
-        def pre_dump(self, data, **_):
+        def pre_dump(self, obj, **_):
+            data = obj.__dict__
             data["type"] = data["type"].value
             data["events"] = ",".join(e.value for e in data["events"])
             return data
