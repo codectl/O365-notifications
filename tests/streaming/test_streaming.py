@@ -1,6 +1,7 @@
 import O365.account
 import pytest
 
+from O365_notifications.constants import O365EventType
 from O365_notifications.streaming import O365StreamingSubscriber
 
 
@@ -18,14 +19,14 @@ def folder(account):
 
 
 @pytest.fixture(scope="class")
-def subscriber(account):
-    subscriber = O365StreamingSubscriber()
-    inbox_folder = account.mailbox().inbox_folder()
-    subscriber.subscribe(resource=inbox_folder)
+def subscriber(account, folder):
+    subscriber = O365StreamingSubscriber(parent=account)
+    events = [O365EventType.CREATED]
+    subscriber.subscribe(resource=folder, events=events)
     return subscriber
 
 
 class TestMailbox:
-    def test_subscribe(self, folder):
-        subscriber = O365StreamingSubscriber()
-        subscriber.subscribe(resource=folder)
+    def test_subscribe(self, account, folder):
+        subscriber = O365StreamingSubscriber(parent=account)
+        subscriber.subscribe(resource=folder, events=[O365EventType.CREATED])
