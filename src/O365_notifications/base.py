@@ -157,7 +157,7 @@ class O365Subscriber(ApiComponent, ABC):
         :param resource: the resource to subscribe to
         :param events: events type for the resource subscription
         """
-        update = next(s for s in self.subscriptions if s.resource == resource)
+        update = next((s for s in self.subscriptions if s.resource == resource), None)
         if update:
             events = [ev for ev in events if ev not in update.events]
             if not events:
