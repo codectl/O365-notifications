@@ -11,7 +11,6 @@ from O365_notifications.base import (
     O365Subscriber,
     O365NotificationsHandler,
 )
-from O365_notifications.constants import O365Namespace
 
 __all__ = (
     "O365KeepAliveNotification",
