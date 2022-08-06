@@ -147,7 +147,7 @@ class O365Subscriber(ApiComponent, ABC):
         self.namespace = O365Namespace.from_protocol(protocol=protocol)
         self.subscriptions = []
 
-    def subscription_factory(self, **kwargs):
+    def subscription_factory(self, **kwargs) -> O365BaseSubscription:
         return self.subscription_cls(**kwargs)
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
