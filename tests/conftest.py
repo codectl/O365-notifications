@@ -14,7 +14,13 @@ class TestBackend(BaseTokenBackend):
         return True
 
     def load_token(self):
-        return {}
+        return {
+            "token_type": "Bearer",
+            "expires_in": 3599,
+            "ext_expires_in": 3599,
+            "access_token": "token",
+            "expires_at": 0
+        }
 
 
 @pytest.fixture(scope="session")
