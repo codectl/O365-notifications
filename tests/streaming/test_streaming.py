@@ -6,11 +6,16 @@ from O365_notifications.streaming import O365StreamingSubscriber
 
 
 @pytest.fixture(scope="class")
-def account():
-    return O365.Account(
+def account(backend):
+    account = O365.Account(
         credentials=("user", "pass"),
-        main_resource="me@test.com",
+        tenant_id="foo",
+        main_resource="foo@bar.com",
+        auth_flow_type="credentials",
+        token_backend=backend
     )
+    account.authenticate()
+    return account
 
 
 @pytest.fixture(scope="class")
