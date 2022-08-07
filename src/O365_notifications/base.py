@@ -144,7 +144,6 @@ class O365Subscriber(ApiComponent, ABC):
         super().__init__(protocol=protocol, main_resource=main_resource)
 
         self.con = getattr(parent, "con", con)  # communication with the api provider
-        self.parent = parent if issubclass(type(parent), self.__class__) else None
         self.namespace = O365Namespace.from_protocol(protocol=protocol)
         self.subscriptions = []
 
