@@ -119,7 +119,7 @@ class O365BaseSubscription(ABC):
         def post_load(self, data, **_):
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
-            return O365BaseSubscription(**data)
+            return O365BaseSubscription(**{**data, "raw": data})
 
     schema = BaseO365SubscriptionSchema  # alias
 
@@ -173,7 +173,7 @@ class O365Subscriber(ApiComponent, ABC):
 
         # register subscription
         subscription = self.subscription_cls.deserialize(
-            {**raw, "raw": raw}, namespace=self.namespace
+            data=raw, namespace=self.namespace
         )
         if update:
             update.id = subscription.id
