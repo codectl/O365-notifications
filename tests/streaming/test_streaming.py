@@ -7,12 +7,14 @@ from O365_notifications.streaming import O365StreamingSubscriber
 
 @pytest.fixture(scope="class")
 def account(backend):
+    protocol = O365.MSOffice365Protocol(api_version="beta")
     return O365.Account(
         credentials=("user", "pass"),
         tenant_id="foo",
         main_resource="foo@bar.com",
         auth_flow_type="credentials",
-        token_backend=backend
+        protocol=protocol,
+        token_backend=backend,
     )
 
 
@@ -26,8 +28,24 @@ def subscriber(account, folder):
     return O365StreamingSubscriber(parent=account)
 
 
+@pytest.fixture(scope="class")
+def outlook_subscription(account):
+    base_url = "https://outlook.office.com/api/beta/"
+    return {
+        "@odata.context": f"{base_url}/...",
+        "@odata.type": "#Microsoft.OutlookServices.StreamingSubscription",
+        "@odata.id": f"{base_url}/users/foo@bar.com/Subscriptions('RUM4OEJFNUIQUQ4MQ')",
+        "Id": "RUM4OEJFNUIQUQ4MQ",
+        "Resource": f"{base_url}/me/mailfolders('inbox')/Messages",
+        "ChangeType": "Created",
+    }
+
+
 class TestMailbox:
-    def test_subscribe(self, subscriber, folder):
-        # requests_mock.register_uri("POST", account.)
-        url = subscriber.build_base_url(subscriber.parent.main_resource)
+    def test_subscribe(self, subscriber, folder, outlook_subscription, requests_mock):
+        response = outlook_subscription
+        base_url = f"{subscriber.protocol.service_url}{subscriber.main_resource}"
+        requests_mock.register_uri("POST", f"{base_url}/subscriptions", json=response)
         subscriber.subscribe(resource=folder, events=[O365EventType.CREATED])
+
+        assert len(subscriber.subscriptions) == 1
