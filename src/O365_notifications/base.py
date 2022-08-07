@@ -32,7 +32,7 @@ class O365BaseNotification(DeserializerMixin, ABC):
             super().__init__(**kwargs)
 
         @post_load
-        def post_load(self, data, **_):
+        def convert_types(self, data, **_):
             data["type"] = self.namespace.O365NotificationType(data["type"])
             return data
 
@@ -73,13 +73,12 @@ class O365Notification(O365BaseNotification):
         )
 
         @post_load
-        def post_load(self, data, **_):
+        def convert_types(self, data, **_):
             data["type"] = self.namespace.O365NotificationType.NOTIFICATION
             data["event"] = O365EventType(data["event"])
-            data["resource"]["type"] = self.namespace.O365ResourceDataType(
-                data["resource"]["type"]
-            )
-            return O365Notification(**data)
+            resource = data["resource"]
+            resource["type"] = self.namespace.O365ResourceDataType(resource["type"])
+            return data
 
     resource: O365ResourceData
     schema = O365NotificationSchema  # alias
@@ -92,7 +91,7 @@ class O365BaseSubscription(DeserializerMixin, ABC):
     events: list[O365EventType]
     id: str = None
 
-    class BaseO365SubscriptionSchema(Schema):
+    class BaseO365SubscriptionSchema(DeserializerMixin.DeserializerSchema):
         id = fields.Str(data_key="Id", load_only=True)
         type = fields.Str(data_key="@odata.type")
         resource_url = fields.Str(data_key="Resource")
@@ -103,15 +102,14 @@ class O365BaseSubscription(DeserializerMixin, ABC):
             super().__init__(**kwargs)
 
         @pre_dump
-        def pre_dump(self, obj, **_):
+        def serialize(self, obj, **_):
             data = obj.__dict__
             data["type"] = data["type"].value
             data["events"] = ",".join(e.value for e in data["events"])
             return data
 
         @post_load
-        def post_load(self, data, **_):
-            data["raw"] = data
+        def convert_types(self, data, **_):
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
             return data
