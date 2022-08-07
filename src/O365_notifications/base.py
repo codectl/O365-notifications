@@ -110,6 +110,7 @@ class O365BaseSubscription(DeserializerMixin, ABC):
 
         @post_load
         def convert_types(self, data, **_):
+            print(1)
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
             return data
