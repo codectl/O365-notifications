@@ -139,7 +139,7 @@ class O365Subscriber(ApiComponent, ABC):
         self.subscriptions = []
 
     def subscription_factory(self, **kwargs) -> O365BaseSubscription:
-        return self.subscription_cls(**kwargs)
+        return self.subscription_cls(**{**kwargs, "raw": kwargs})
 
     def subscribe(self, *, resource: ApiComponent, events: list[O365EventType]):
         """
