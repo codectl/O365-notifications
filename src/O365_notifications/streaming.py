@@ -51,7 +51,7 @@ class O365StreamingSubscriber(O365Subscriber):
         return self.subscription_cls(**{"type": subscription_type, **kwargs})
 
     def notification_factory(self, data) -> O365BaseNotification:
-        base = O365BaseNotification.schema(namespace=self.namespace).load(**data)
+        base = O365BaseNotification.deserialize(data, namespace=self.namespace)
         if base.type == self.namespace.O365NotificationType.NOTIFICATION:
             return O365Notification.deserialize(data, namespace=self.namespace)
         elif base.type == self.namespace.O365NotificationType.KEEP_ALIVE_NOTIFICATION:
