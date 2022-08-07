@@ -19,7 +19,7 @@ class TestBackend(BaseTokenBackend):
             "expires_in": 3599,
             "ext_expires_in": 3599,
             "access_token": "token",
-            "expires_at": 0
+            "expires_at": 0,
         }
 
 
