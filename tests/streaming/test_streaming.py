@@ -29,7 +29,7 @@ def subscriber(account, folder):
 
 
 class TestMailbox:
-    def test_outlook_subscription(self, subscriber, folder, requests_mock):
+    def test_subscription(self, subscriber, folder, requests_mock):
         proto_url = f"{subscriber.protocol.service_url}{subscriber.main_resource}"
         sub_type = subscriber.namespace.O365SubscriptionType.STREAMING_SUBSCRIPTION
         response = {
