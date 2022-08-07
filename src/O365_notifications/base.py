@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from O365.utils import ApiComponent
-from marshmallow import fields, post_load, pre_dump
+from marshmallow import fields, post_load, pre_dump, Schema
 
-from O365_notifications.utils import build_url, DeserializerSchema, Schema
+from O365_notifications.utils import build_url, DeserializerMixin
 from O365_notifications.constants import O365EventType, O365Namespace
 
 __all__ = (
@@ -21,11 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class O365BaseNotification(ABC):
+class O365BaseNotification(DeserializerMixin, ABC):
     type: O365Namespace.O365NotificationType
-    raw: dict
 
-    class BaseO365NotificationSchema(DeserializerSchema):
+    class BaseO365NotificationSchema(DeserializerMixin.DeserializerSchema):
         type = fields.Str(data_key="@odata.type")
 
         def __init__(self, **kwargs):
@@ -35,13 +34,9 @@ class O365BaseNotification(ABC):
         @post_load
         def post_load(self, data, **_):
             data["type"] = self.namespace.O365NotificationType(data["type"])
-            return O365BaseNotification(**{**data, "raw": data})
+            return data
 
     schema = BaseO365NotificationSchema  # alias
-
-    @classmethod
-    def deserialize(cls, data: dict, **kwargs):
-        return cls.schema(**kwargs).load(data)
 
 
 @dataclass
@@ -91,12 +86,11 @@ class O365Notification(O365BaseNotification):
 
 
 @dataclass
-class O365BaseSubscription(ABC):
+class O365BaseSubscription(DeserializerMixin, ABC):
     type: O365Namespace.O365SubscriptionType
     resource_url: str
     events: list[O365EventType]
     id: str = None
-    raw: dict = None
 
     class BaseO365SubscriptionSchema(Schema):
         id = fields.Str(data_key="Id", load_only=True)
@@ -117,15 +111,12 @@ class O365BaseSubscription(ABC):
 
         @post_load
         def post_load(self, data, **_):
+            data["raw"] = data
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
-            return O365BaseSubscription(**{**data, "raw": data})
+            return data
 
     schema = BaseO365SubscriptionSchema  # alias
-
-    @classmethod
-    def deserialize(cls, data: dict, **kwargs):
-        return cls.schema(**kwargs).load(data)
 
     def serialize(self, **kwargs):
         return self.schema(**kwargs).dump(self)
