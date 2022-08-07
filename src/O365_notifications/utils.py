@@ -30,9 +30,9 @@ class DeserializerMixin:
             for f in self.declared_fields.values():
                 f.load_only = True
 
-        @post_load
-        def include_raw_field(self, data, **_):
-            data["raw"] = data
+        @post_load(pass_original=True)
+        def include_raw_field(self, data, original_data, **_):
+            data["raw"] = original_data
             return data
 
     schema = DeserializerSchema  # alias
