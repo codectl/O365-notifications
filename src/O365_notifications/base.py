@@ -35,7 +35,7 @@ class O365BaseNotification(ABC):
         @post_load
         def post_load(self, data, **_):
             data["type"] = self.namespace.O365NotificationType(data["type"])
-            return O365BaseNotification(**data)
+            return O365BaseNotification(**{**data, "raw": data})
 
     schema = BaseO365NotificationSchema  # alias
 
