@@ -47,5 +47,9 @@ class TestMailbox:
         base_url = f"{subscriber.protocol.service_url}{subscriber.main_resource}"
         requests_mock.register_uri("POST", f"{base_url}/subscriptions", json=response)
         subscriber.subscribe(resource=folder, events=[O365EventType.CREATED])
+        sub_type = subscriber.namespace.O365SubscriptionType.STREAMING_SUBSCRIPTION
         assert len(subscriber.subscriptions) == 1
+        assert subscriber.subscriptions[0].type == sub_type
+        assert subscriber.subscriptions[0].id == "RUM4OEJFNUIQUQ4MQ"
+        assert subscriber.subscriptions[0].events == [O365EventType.CREATED]
         assert subscriber.subscriptions[0].raw == response
