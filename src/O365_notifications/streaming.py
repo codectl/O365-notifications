@@ -31,7 +31,12 @@ class O365KeepAliveNotification(O365BaseNotification):
 
 
 class O365StreamingSubscription(O365BaseSubscription):
-    pass
+
+    class O365StreamingSubscriptionSchema(O365BaseSubscription.schema):
+        context = fields.Str(data_key="@odata.context", load_only=True)
+        url = fields.Str(data_key="@odata.id", load_only=True)
+
+    schema = O365StreamingSubscriptionSchema  # alias
 
 
 class O365StreamingSubscriber(O365Subscriber):
