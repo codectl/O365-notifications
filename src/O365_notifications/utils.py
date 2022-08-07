@@ -1,7 +1,8 @@
 import typing
+from dataclasses import dataclass, fields
 
 import O365.mailbox
-from marshmallow import Schema
+from marshmallow import post_load, Schema
 
 
 def build_url(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
@@ -19,8 +20,25 @@ def build_url(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
     return None
 
 
-class DeserializerSchema(Schema):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        for field in self.declared_fields.values():
-            field.load_only = True
+@dataclass
+class DeserializerMixin:
+    raw: dict
+
+    class DeserializerSchema(Schema):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            for field in self.declared_fields.values():
+                field.load_only = True
+
+        @post_load
+        def post_load(self, data, **_):
+            data["raw"] = data
+            return data
+
+    schema = DeserializerSchema  # alias
+
+    @classmethod
+    def deserialize(cls, data: dict, **kwargs):
+        cls_fields = (f.name for f in fields(cls))
+        loaded_fields = cls.schema(**kwargs).load(data)
+        return cls(**{k: v for k, v in loaded_fields.items() if k in cls_fields})
