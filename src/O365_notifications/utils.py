@@ -31,7 +31,7 @@ class DeserializerMixin:
                 f.load_only = True
 
         @post_load
-        def post_load(self, data, **_):
+        def include_raw_field(self, data, **_):
             data["raw"] = data
             return data
 
@@ -39,6 +39,6 @@ class DeserializerMixin:
 
     @classmethod
     def deserialize(cls, data: dict, **kwargs):
-        cls_fields = (f.name for f in fields(cls))
+        cls_fields = [f.name for f in fields(cls)]
         loaded_fields = cls.schema(**kwargs).load(data)
         return cls(**{k: v for k, v in loaded_fields.items() if k in cls_fields})
