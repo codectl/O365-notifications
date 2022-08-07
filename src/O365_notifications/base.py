@@ -146,12 +146,6 @@ class O365Subscriber(ApiComponent, ABC):
         :param resource: the resource to subscribe to
         :param events: events type for the resource subscription
         """
-        update = next((s for s in self.subscriptions if s.resource == resource), None)
-        if update:
-            events = [ev for ev in events if ev not in update.events]
-            if not events:
-                raise ValueError("subscription for given resource already exists")
-
         req = self.subscription_factory(
             resource_url=build_url(resource), events=events
         ).serialize()
@@ -164,6 +158,8 @@ class O365Subscriber(ApiComponent, ABC):
         subscription = self.subscription_cls.deserialize(
             data=raw, namespace=self.namespace
         )
+
+        update = next((s for s in self.subscriptions if s.resource == resource), None)
         if update:
             update.id = subscription.id
             update.events.append(events)
