@@ -97,5 +97,4 @@ class TestMailbox:
         }
         requests_mock.register_uri("POST", f"{base_url}/GetNotifications", json=data)
         subscriber.create_event_channel()
-
-        assert False
+        assert len(subscriber.subscriptions) == 1
