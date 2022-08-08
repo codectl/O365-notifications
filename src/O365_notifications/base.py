@@ -76,8 +76,7 @@ class O365Notification(O365BaseNotification):
         def convert_types(self, data, **_):
             data["type"] = self.namespace.O365NotificationType.NOTIFICATION
             data["event"] = O365EventType(data["event"])
-            resource = data["resource"]
-            resource["type"] = self.namespace.O365ResourceDataType(resource["type"])
+            data["resource"]["type"] = self.namespace.O365ResourceDataType(data["resource"]["type"])
             return data
 
     resource: O365ResourceData
@@ -87,8 +86,9 @@ class O365Notification(O365BaseNotification):
 @dataclass
 class O365BaseSubscription(DeserializerMixin, ABC):
     type: O365Namespace.O365SubscriptionType
-    resource_url: str
     events: list[O365EventType]
+    resource: ApiComponent
+    resource_url: str = None
     id: str = None
 
     class BaseO365SubscriptionSchema(DeserializerMixin.DeserializerSchema):
@@ -98,6 +98,7 @@ class O365BaseSubscription(DeserializerMixin, ABC):
         events = fields.Str(data_key="ChangeType")
 
         def __init__(self, **kwargs):
+            self.resource = kwargs.pop("resource", None)
             self.namespace = kwargs.pop("namespace", None)
             super().__init__(**kwargs)
 
@@ -106,12 +107,14 @@ class O365BaseSubscription(DeserializerMixin, ABC):
             data = obj.__dict__
             data["type"] = data["type"].value
             data["events"] = ",".join(e.value for e in data["events"])
+            data["resource_url"] = build_url(data["resource"]),
             return data
 
         @post_load
         def convert_types(self, data, **_):
             data["type"] = self.namespace.O365SubscriptionType(data["type"])
             data["events"] = [O365EventType(e) for e in data["events"].split(",")]
+            data["resource"] = self.resource
             return data
 
     schema = BaseO365SubscriptionSchema  # alias
@@ -147,7 +150,8 @@ class O365Subscriber(ApiComponent, ABC):
         :param events: events type for the resource subscription
         """
         req = self.subscription_factory(
-            resource_url=build_url(resource), events=events
+            resource=resource,
+            events=events
         ).serialize()
 
         url = self.build_url(self._endpoints.get("subscriptions"))
@@ -156,7 +160,7 @@ class O365Subscriber(ApiComponent, ABC):
 
         # register subscription
         subscription = self.subscription_cls.deserialize(
-            data=raw, namespace=self.namespace
+            data=raw, resource=resource, namespace=self.namespace
         )
 
         update = next((s for s in self.subscriptions if s.resource == resource), None)
