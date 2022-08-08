@@ -9,7 +9,7 @@ from O365_notifications.constants import O365EventType
 from O365_notifications.streaming import O365StreamingSubscriber
 
 
-@pytest.fixture(scope="class", params=(MSOffice365Protocol, MSGraphProtocol))
+@pytest.fixture(scope="class", params=[MSOffice365Protocol, MSGraphProtocol])
 def account(backend, request):
     protocol = request.param(api_version="beta")
     return Account(
@@ -49,6 +49,7 @@ def subscribe(resource, events, subscriber, requests_mock):
     }
     requests_mock.register_uri("POST", f"{base_url}/subscriptions", json=response)
     subscriber.subscribe(resource=resource, events=events)
+    return next(iter(subscriber.subscriptions))
 
 
 class TestMailbox:
@@ -67,9 +68,34 @@ class TestMailbox:
     def test_streaming_connection(self, subscription, subscriber, requests_mock):
         proto_url = subscriber.protocol.service_url
         base_url = f"{proto_url}{subscriber.main_resource}"
-        response = {
+        keep_alive_t = subscriber.namespace.O365NotificationType.KEEP_ALIVE_NOTIFICATION
+        notif_t = subscriber.namespace.O365NotificationType.NOTIFICATION
+        message_t = subscriber.namespace.O365ResourceDataType.MESSAGE
+        data = {
             "@odata.context": f"{proto_url}/metadata#Notifications",
-            "value": [],
+            "value": [
+                {
+                    "@odata.type": keep_alive_t.value,
+                    "Status": "OK",
+                },
+                {
+                    "@odata.type": notif_t.value,
+                    "Id": "null",
+                    "SubscriptionId": subscription.id,
+                    "SubscriptionExpirationDateTime": "2016-09-09T18:36:42.3454926Z",
+                    "SequenceNumber": 9,
+                    "ChangeType": O365EventType.CREATED.value,
+                    "Resource": f"{base_url}/Messages('XYZ')",
+                    "ResourceData": {
+                        "@odata.type": message_t.value,
+                        "@odata.id": f"{base_url}/Messages('XYZ')",
+                        "@odata.etag": "XYZ000",
+                        "Id": "ABC",
+                    },
+                },
+            ],
         }
-        requests_mock.register_uri("POST", f"{base_url}/GetNotifications", json={})
+        requests_mock.register_uri("POST", f"{base_url}/GetNotifications", json=data)
         subscriber.create_event_channel()
+
+        assert False
