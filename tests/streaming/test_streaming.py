@@ -63,3 +63,9 @@ class TestMailbox:
         subscriber.renew_subscriptions()
         assert len(subscriber.subscriptions) == 1
         assert subscriber.subscriptions[0].events == [O365EventType.CREATED]
+
+    @pytest_cases.parametrize("subscription", [fixture_ref("subscribe")])
+    def test_streaming_connection(self, subscription, subscriber, requests_mock):
+        proto_url = f"{subscriber.protocol.service_url}{subscriber.main_resource}"
+        requests_mock.register_uri("POST", f"{proto_url}/GetNotifications", json={})
+        subscriber.create_event_channel()
