@@ -2,7 +2,7 @@ import json
 import logging
 import requests
 
-from marshmallow import fields
+from marshmallow import EXCLUDE, fields
 
 from O365_notifications.base import (
     O365BaseNotification,
@@ -50,11 +50,12 @@ class O365StreamingSubscriber(O365Subscriber):
         return self.subscription_cls(**{**kwargs, "type": sub_type, "raw": kwargs})
 
     def notification_factory(self, data) -> O365BaseNotification:
-        base = O365BaseNotification.deserialize(data, namespace=self.namespace)
+        ns = {"namespace": self.namespace}
+        base = O365BaseNotification.deserialize(data, **ns, unknown=EXCLUDE)
         if base.type == self.namespace.O365NotificationType.NOTIFICATION:
-            return O365Notification.deserialize(data, namespace=self.namespace)
+            return O365Notification.deserialize(data, **ns)
         elif base.type == self.namespace.O365NotificationType.KEEP_ALIVE_NOTIFICATION:
-            return O365KeepAliveNotification.deserialize(data, namespace=self.namespace)
+            return O365KeepAliveNotification.deserialize(data, **ns)
 
     def create_event_channel(
         self,
