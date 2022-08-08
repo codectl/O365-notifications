@@ -166,7 +166,7 @@ class O365Subscriber(ApiComponent, ABC):
         update = next((s for s in self.subscriptions if s.resource == resource), None)
         if update:
             update.id = subscription.id
-            update.events.append(events)
+            update.events = events
             update.raw = raw
         else:
             self.subscriptions.append(subscription)
