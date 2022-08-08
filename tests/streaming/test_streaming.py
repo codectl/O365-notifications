@@ -45,14 +45,13 @@ def subscribe(resource, events, subscriber, requests_mock):
         "@odata.id": f"{proto_url}/users/foo@bar.com/Subscriptions('{random_id}')",
         "Id": random_id,
         "Resource": f"{proto_url}/me/mailfolders('inbox')/Messages",
-        "ChangeType": ",".join(e.value for e in events)
+        "ChangeType": ",".join(e.value for e in events),
     }
     requests_mock.register_uri("POST", f"{proto_url}/subscriptions", json=response)
     subscriber.subscribe(resource=resource, events=events)
 
 
 class TestMailbox:
-
     @pytest_cases.parametrize("subscription", [fixture_ref("subscribe")])
     def test_subscription(self, subscription, subscriber):
         assert len(subscriber.subscriptions) == 1

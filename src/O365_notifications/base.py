@@ -76,7 +76,9 @@ class O365Notification(O365BaseNotification):
         def convert_types(self, data, **_):
             data["type"] = self.namespace.O365NotificationType.NOTIFICATION
             data["event"] = O365EventType(data["event"])
-            data["resource"]["type"] = self.namespace.O365ResourceDataType(data["resource"]["type"])
+            data["resource"]["type"] = self.namespace.O365ResourceDataType(
+                data["resource"]["type"]
+            )
             return data
 
     resource: O365ResourceData
@@ -107,7 +109,7 @@ class O365BaseSubscription(DeserializerMixin, ABC):
             data = obj.__dict__
             data["type"] = data["type"].value
             data["events"] = ",".join(e.value for e in data["events"])
-            data["resource_url"] = build_url(data["resource"]),
+            data["resource_url"] = (build_url(data["resource"]),)
             return data
 
         @post_load
@@ -149,10 +151,7 @@ class O365Subscriber(ApiComponent, ABC):
         :param resource: the resource to subscribe to
         :param events: events type for the resource subscription
         """
-        req = self.subscription_factory(
-            resource=resource,
-            events=events
-        ).serialize()
+        req = self.subscription_factory(resource=resource, events=events).serialize()
 
         url = self.build_url(self._endpoints.get("subscriptions"))
         response = self.con.post(url, req)
