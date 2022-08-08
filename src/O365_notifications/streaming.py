@@ -50,12 +50,12 @@ class O365StreamingSubscriber(O365Subscriber):
         return self.subscription_cls(**{**kwargs, "type": sub_type, "raw": kwargs})
 
     def notification_factory(self, data) -> O365BaseNotification:
-        ns = {"namespace": self.namespace}
-        base = O365BaseNotification.deserialize(data, **ns, unknown=EXCLUDE)
+        opts = {"namespace": self.namespace, "unknown": EXCLUDE}
+        base = O365BaseNotification.deserialize(data, **opts)
         if base.type == self.namespace.O365NotificationType.NOTIFICATION:
-            return O365Notification.deserialize(data, **ns)
+            return O365Notification.deserialize(data, **opts)
         elif base.type == self.namespace.O365NotificationType.KEEP_ALIVE_NOTIFICATION:
-            return O365KeepAliveNotification.deserialize(data, **ns)
+            return O365KeepAliveNotification.deserialize(data, **opts)
 
     def create_event_channel(
         self,
