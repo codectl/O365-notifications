@@ -1,6 +1,6 @@
 import datetime
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
 
 from O365.utils import ApiComponent
@@ -183,6 +183,5 @@ class O365Subscriber(ApiComponent, ABC):
 
 
 class O365NotificationsHandler(ABC):
-    @abstractmethod
     def process(self, notification: O365BaseNotification):
         logger.debug(vars(notification))
