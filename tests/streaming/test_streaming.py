@@ -58,11 +58,8 @@ class TestMailbox:
         assert len(subscriber.subscriptions) == 1
         assert subscriber.subscriptions[0].events == [O365EventType.CREATED]
 
-    # @pytest_cases.parametrize("subscription", [fixture_ref("subscribe")])
-    # def test_renew_subscription(self, subscription, subscriber):
-    #     print(subscriber.subscriptions[0].id)
-    #     subscriber.renew_subscriptions()
-    #     print(subscriber.subscriptions[0].id)
-    #     assert len(subscriber.subscriptions) == 1
-    #     assert subscriber.subscriptions[0].id == "xyz"
-    #     assert subscriber.subscriptions[0].events == [O365EventType.CREATED]
+    @pytest_cases.parametrize("subscription", [fixture_ref("subscribe")])
+    def test_renew_subscription(self, subscription, subscriber):
+        subscriber.renew_subscriptions()
+        assert len(subscriber.subscriptions) == 1
+        assert subscriber.subscriptions[0].events == [O365EventType.CREATED]
