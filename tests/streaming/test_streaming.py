@@ -23,7 +23,7 @@ def account(backend, request):
 
 
 @pytest.fixture
-def folder(account):
+def inbox(account):
     return account.mailbox().inbox_folder()
 
 
@@ -33,7 +33,7 @@ def subscriber(account):
 
 
 @pytest_cases.fixture
-@pytest_cases.parametrize("resource", [fixture_ref("folder")])
+@pytest_cases.parametrize("resource", [fixture_ref("inbox")])
 @pytest_cases.parametrize("events", [[O365EventType.CREATED]])
 def subscribe(resource, events, subscriber, requests_mock):
     proto_url = f"{subscriber.protocol.service_url}{subscriber.main_resource}"
