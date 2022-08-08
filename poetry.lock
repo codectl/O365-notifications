@@ -82,6 +82,17 @@ python-versions = ">=3.7"
 toml = ["tomli"]
 
 [[package]]
+name = "decopatch"
+version = "1.4.10"
+description = "Create decorators easily in python."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+makefun = ">=1.5.0"
+
+[[package]]
 name = "distlib"
 version = "0.3.5"
 description = "Distribution utilities"
@@ -124,6 +135,14 @@ python-versions = ">=3.5"
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "makefun"
+version = "1.14.0"
+description = "Small library to dynamically create python functions."
 category = "dev"
 optional = false
 python-versions = "*"
@@ -273,6 +292,18 @@ tomli = ">=1.0.0"
 
 [package.extras]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
+
+[[package]]
+name = "pytest-cases"
+version = "3.6.13"
+description = "Separate test code from test cases in pytest."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+decopatch = "*"
+makefun = ">=1.9.5"
 
 [[package]]
 name = "python-dateutil"
@@ -461,7 +492,7 @@ O365 = ["O365"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "13d01ea8f2c3b4b3a28ec3fd2582b8e63a2c8e8f461e19e33287e8faceeb0ba8"
+content-hash = "f39733fed9a844c491bfb8feb7712c35042a7a418f7fc71b6d09773f3f0435ee"
 
 [metadata.files]
 atomicwrites = []
@@ -526,6 +557,10 @@ coverage = [
     {file = "coverage-6.4.3-pp36.pp37.pp38-none-any.whl", hash = "sha256:068d6f2a893af838291b8809c876973d885543411ea460f3e6886ac0ee941732"},
     {file = "coverage-6.4.3.tar.gz", hash = "sha256:ec2ae1f398e5aca655b7084392d23e80efb31f7a660d2eecf569fb9f79b3fb94"},
 ]
+decopatch = [
+    {file = "decopatch-1.4.10-py2.py3-none-any.whl", hash = "sha256:e151f7f93de2b1b3fd3f3272dcc7cefd1a69f68ec1c2d8e288ecd9deb36dc5f7"},
+    {file = "decopatch-1.4.10.tar.gz", hash = "sha256:957f49c93f4150182c23f8fb51d13bb3213e0f17a79e09c8cca7057598b55720"},
+]
 distlib = [
     {file = "distlib-0.3.5-py2.py3-none-any.whl", hash = "sha256:b710088c59f06338ca514800ad795a132da19fda270e3ce4affc74abf955a26c"},
     {file = "distlib-0.3.5.tar.gz", hash = "sha256:a7f75737c70be3b25e2bee06288cec4e4c221de18455b2dd037fe2a795cab2fe"},
@@ -542,6 +577,10 @@ idna = []
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
+]
+makefun = [
+    {file = "makefun-1.14.0-py2.py3-none-any.whl", hash = "sha256:7431941c736f33948aa438f1bfb5795957470d7246801d8c06c84b88997502b6"},
+    {file = "makefun-1.14.0.tar.gz", hash = "sha256:770c6e458f1ef47304185334f1d686ee201755d06152a878e2646275340c181d"},
 ]
 marshmallow = [
     {file = "marshmallow-3.17.0-py3-none-any.whl", hash = "sha256:00040ab5ea0c608e8787137627a8efae97fabd60552a05dc889c888f814e75eb"},
@@ -583,6 +622,10 @@ pyparsing = [
 pytest = [
     {file = "pytest-7.1.2-py3-none-any.whl", hash = "sha256:13d0e3ccfc2b6e26be000cb6568c832ba67ba32e719443bfe725814d3c42433c"},
     {file = "pytest-7.1.2.tar.gz", hash = "sha256:a06a0425453864a270bc45e71f783330a7428defb4230fb5e6a731fde06ecd45"},
+]
+pytest-cases = [
+    {file = "pytest-cases-3.6.13.tar.gz", hash = "sha256:7b584433231280b16a74f34d9ba1f50abcc6b973d3ba3ada9053c2c41a11fb77"},
+    {file = "pytest_cases-3.6.13-py2.py3-none-any.whl", hash = "sha256:d5bdea5a2bf8a9fef594153d2f33c6a5b45328fe26bb7b8e136442ddc67c72cd"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
