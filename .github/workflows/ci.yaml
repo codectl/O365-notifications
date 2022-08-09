@@ -45,6 +45,7 @@ jobs:
         run: |
           poetry show
           poetry env info
+          env | grep -i python
           poetry run python -c "import sys; print('\n'.join(sys.path))"
       - name: Run test suite with tox
         shell: bash
