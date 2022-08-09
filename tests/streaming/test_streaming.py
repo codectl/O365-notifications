@@ -77,7 +77,7 @@ class TestMailbox:
         types = {
             "keep_alive": ns.O365NotificationType.KEEP_ALIVE_NOTIFICATION,
             "notif": ns.O365NotificationType.NOTIFICATION,
-            "message": ns.O365ResourceDataType.MESSAGE
+            "message": ns.O365ResourceDataType.MESSAGE,
         }
         data = {
             "@odata.context": f"{proto_url}/metadata#Notifications",

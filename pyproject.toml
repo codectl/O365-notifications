@@ -5,6 +5,9 @@ description = "Pythonic handler for O365 Streaming & Push Notifications"
 authors = ["Renato Damas <rena2damas@gmail.com>"]
 license = "MIT"
 readme = "README.rst"
+packages = [
+    { include = "*", from = "src" }
+]
 homepage = ""
 repository = "https://github.com/rena2damas/O365-notifications"
 documentation = ""
