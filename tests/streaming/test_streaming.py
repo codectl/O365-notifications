@@ -1,12 +1,17 @@
 import random
+from datetime import datetime
 
 import pytest
 import pytest_cases
 from O365 import Account, MSGraphProtocol, MSOffice365Protocol
 from pytest_cases import fixture_ref
 
+from O365_notifications.base import O365BaseNotificationsHandler, O365Notification
 from O365_notifications.constants import O365EventType
-from O365_notifications.streaming import O365StreamingSubscriber
+from O365_notifications.streaming import (
+    O365KeepAliveNotification,
+    O365StreamingSubscriber,
+)
 
 
 @pytest.fixture(scope="class", params=[MSOffice365Protocol, MSGraphProtocol])
@@ -68,33 +73,56 @@ class TestMailbox:
     def test_streaming_connection(self, subscription, subscriber, requests_mock):
         proto_url = subscriber.protocol.service_url
         base_url = f"{proto_url}{subscriber.main_resource}"
-        keep_alive_t = subscriber.namespace.O365NotificationType.KEEP_ALIVE_NOTIFICATION
-        notif_t = subscriber.namespace.O365NotificationType.NOTIFICATION
-        message_t = subscriber.namespace.O365ResourceDataType.MESSAGE
+        ns = subscriber.namespace
+        types = {
+            "keep_alive": ns.O365NotificationType.KEEP_ALIVE_NOTIFICATION,
+            "notif": ns.O365NotificationType.NOTIFICATION,
+            "message": ns.O365ResourceDataType.MESSAGE
+        }
         data = {
             "@odata.context": f"{proto_url}/metadata#Notifications",
             "value": [
                 {
-                    "@odata.type": keep_alive_t.value,
+                    "@odata.type": types["keep_alive"].value,
                     "Status": "OK",
                 },
                 {
-                    "@odata.type": notif_t.value,
+                    "@odata.type": types["notif"].value,
                     "Id": "null",
                     "SubscriptionId": subscription.id,
-                    "SubscriptionExpirationDateTime": "2016-09-09T18:36:42.3454926Z",
-                    "SequenceNumber": 9,
+                    "SubscriptionExpirationDateTime": datetime.now().isoformat(),
+                    "SequenceNumber": 1,
                     "ChangeType": O365EventType.CREATED.value,
                     "Resource": f"{base_url}/Messages('XYZ')",
                     "ResourceData": {
-                        "@odata.type": message_t.value,
+                        "@odata.type": types["message"].value,
                         "@odata.id": f"{base_url}/Messages('XYZ')",
                         "@odata.etag": "XYZ000",
                         "Id": "ABC",
                     },
                 },
+                {
+                    "@odata.type": types["keep_alive"].value,
+                    "Status": "OK",
+                },
             ],
         }
         requests_mock.register_uri("POST", f"{base_url}/GetNotifications", json=data)
-        subscriber.create_event_channel()
-        assert len(subscriber.subscriptions) == 1
+
+        class DummyHandler(O365BaseNotificationsHandler):
+            def __init__(self):
+                self.notifications = []
+
+            def process(self, notification):
+                self.notifications.append(notification)
+
+        handler = DummyHandler()
+        subscriber.create_event_channel(notification_handler=handler)
+        assert len(handler.notifications) == 3
+        assert type(handler.notifications[0]) == O365KeepAliveNotification
+        assert type(handler.notifications[1]) == O365Notification
+        assert type(handler.notifications[2]) == O365KeepAliveNotification
+        assert handler.notifications[1].type == types["notif"]
+        assert handler.notifications[1].sequence == 1
+        assert handler.notifications[1].event == O365EventType.CREATED
+        assert handler.notifications[1].resource.type == types["message"]
