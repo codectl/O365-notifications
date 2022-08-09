@@ -6,10 +6,11 @@ from marshmallow import EXCLUDE, fields
 
 from O365_notifications.base import (
     O365BaseNotification,
+    O365BaseNotificationsHandler,
     O365BaseSubscription,
     O365Notification,
+    O365NotificationHandler,
     O365Subscriber,
-    O365NotificationsHandler,
 )
 
 __all__ = (
@@ -60,7 +61,7 @@ class O365StreamingSubscriber(O365Subscriber):
     def create_event_channel(
         self,
         *,
-        notification_handler: O365NotificationsHandler = None,
+        notification_handler: O365BaseNotificationsHandler = None,
         connection_timeout: int = 120,  # equivalent to 2 hours
         keep_alive_interval: int = 5,  # in seconds
         refresh_after_expire: bool = False,

@@ -1,6 +1,6 @@
 import datetime
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from O365.utils import ApiComponent
@@ -11,9 +11,10 @@ from O365_notifications.constants import O365EventType, O365Namespace
 
 __all__ = (
     "O365BaseNotification",
+    "O365BaseNotificationsHandler",
     "O365BaseSubscription",
     "O365Notification",
-    "O365NotificationsHandler",
+    "O365NotificationHandler",
     "O365Subscriber",
 )
 
@@ -181,6 +182,12 @@ class O365Subscriber(ApiComponent, ABC):
         logger.info("Subscriptions renewed.")
 
 
-class O365NotificationsHandler(ABC):
+class O365BaseNotificationsHandler(ABC):
+    @abstractmethod
+    def process(self, notification: O365BaseNotification):
+        pass
+
+
+class O365NotificationHandler(O365BaseNotificationsHandler):
     def process(self, notification: O365BaseNotification):
         logger.debug(vars(notification))
