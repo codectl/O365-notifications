@@ -40,6 +40,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           os: ${{ matrix.os }}
+      - name: Show info
+        shell: bash
+        run: |
+          poetry show
+          poetry env info
       - name: Run test suite with tox
         shell: bash
         run: tox -e py -- -p no:sugar -p no:warnings -q
