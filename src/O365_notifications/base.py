@@ -75,11 +75,11 @@ class O365Notification(O365BaseNotification):
 
         @post_load
         def convert_types(self, data, **_):
-            data["type"] = self.namespace.O365NotificationType.NOTIFICATION
+            ns = self.namespace
+            data["type"] = ns.O365NotificationType.NOTIFICATION
             data["event"] = O365EventType(data["event"])
-            data["resource"]["type"] = self.namespace.O365ResourceDataType(
-                data["resource"]["type"]
-            )
+            data["resource"]["type"] = ns.O365ResourceDataType(data["resource"]["type"])
+            data["resource"] = O365Notification.O365ResourceData(**data["resource"])
             return data
 
     resource: O365ResourceData
