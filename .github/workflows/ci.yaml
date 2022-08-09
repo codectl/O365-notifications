@@ -45,6 +45,7 @@ jobs:
         run: |
           poetry show
           poetry env info
+          poetry run pytest tests/
       - name: Run test suite with tox
         shell: bash
         run: tox -e py -- -p no:sugar -p no:warnings -q
