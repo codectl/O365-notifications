@@ -79,7 +79,7 @@ class O365StreamingSubscriber(O365Subscriber):
         if not self.subscriptions:
             raise ValueError("can't start a streaming connection without subscription.")
 
-        notification_handler = notification_handler or O365NotificationsHandler()
+        notification_handler = notification_handler or O365NotificationHandler()
         url = self.build_url(self._endpoints.get("notifications"))
 
         request_schema = {
