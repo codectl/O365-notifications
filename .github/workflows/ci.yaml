@@ -67,7 +67,7 @@ jobs:
 #        shell: bash
 #        run: tox -e coverage -- -p no:sugar -p no:warnings -q
 #      - name: Submit coverage to codecov
-#        uses: codecov/codecov-action@v2
+#        uses: codecov/codecov-action@v3
 
   success:
     runs-on: ubuntu-latest
