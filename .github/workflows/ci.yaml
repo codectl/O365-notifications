@@ -79,11 +79,8 @@ jobs:
       - run: echo "Done"
 
   publish:
-    runs-on: ubuntu-latest
 #    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
     needs: [ success ]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/release.yaml
-        with:
-          tag: github.ref
+    uses: ./.github/workflows/release.yaml
+    with:
+      tag: github.ref
