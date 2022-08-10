@@ -2,20 +2,19 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: [ CI ]
-    types: [ completed ]
-    branches: [ master ]
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
 
 jobs:
   pre-conditions:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
     steps:
-      - run: echo ${{ github.event.ref }}
+      - run: echo ${{ inputs.tag }}
 
   github-publish:
-    needs: [ pre-conditions ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/create-release@v1
