@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-        echo ${{ inputs.tag }}
+          echo ${{ inputs.tag }}
 
   github-publish:
     runs-on: ubuntu-latest
