@@ -4,6 +4,7 @@ name: CI
 on:
   push:
     branches: [ master ]
+    tags: [ "[0-9]+.[0-9]+.[0-9]+*" ]
   pull_request:
     branches: [ master ]
 
@@ -15,8 +16,8 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/pyenvsetup
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/poetry-setup
         with:
           python-version: "3.9"
           os: ${{ matrix.os }}
@@ -30,23 +31,16 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ ubuntu-latest, macos-latest ]
         python-version: [ "3.9", "3.10" ]
         experimental: [ false ]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/pyenvsetup
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/poetry-setup
         with:
           python-version: ${{ matrix.python-version }}
           os: ${{ matrix.os }}
-      - name: Show info
-        shell: bash
-        run: |
-          poetry show
-          poetry env info
-          env | grep -i python
-          poetry run python -c "import sys; print('\n'.join(sys.path))"
       - name: Run test suite with tox
         shell: bash
         run: tox -e py -- -p no:sugar -p no:warnings -q
@@ -57,8 +51,8 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/pyenvsetup
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/poetry-setup
         with:
           python-version: "3.9"
           os: ${{ matrix.os }}
@@ -66,13 +60,20 @@ jobs:
         shell: bash
         run: tox -e coverage -- -p no:sugar -p no:warnings -q
       - name: Submit coverage to codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
 
-  success:
-    runs-on: ubuntu-latest
+  release-draft:
     needs:
       - linters
       - tests
       - coverage
-    steps:
-      - run: echo "Done"
+    uses: ./.github/workflows/release-drafter.yaml
+
+  publish:
+    if: |
+      github.event_name == 'push'
+      && startsWith(github.event.ref, 'refs/tags')
+    needs: [ release-draft ]
+    uses: ./.github/workflows/release.yaml
+    secrets:
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
