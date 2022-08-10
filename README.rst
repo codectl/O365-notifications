@@ -28,9 +28,9 @@ from Office 365. There are currently 2 ways for receiving notifications:
 
 The versions on these are beta. For more details, see its documentation.
 
-This approach is built on top of the current
-`O365 <https://github.com/O365/python-o365>`_ package. You are recommended to look into
-its documentation for advance setups.
+This approach is built on top of the current `O365
+<https://github.com/O365/python-o365>`_ package. You are recommended to look into its
+documentation for advance setups.
 
 Notification strategies
 =======================
@@ -58,24 +58,28 @@ on how to use it is found below:
 .. code-block:: python
 
     import O365
-    import O365_notifications.base as base
-    import O365_notifications.streaming.mailbox as ms
+    from O365_notifications.base import O365NotificationHandler
+    from O365_notifications.constants import O365EventType
+    from O365_notifications.streaming import O365StreamingSubscriber
 
     account = O365.Account(...)
     mailbox = account.mailbox()
 
-    # mailbox streaming for email creation events
-    mn = ms.O365MailBoxStreamingNotifications(
-        parent=mailbox, change_type=base.O365Notification.ChangeType.CREATED.value
-    )
+    # create a new streaming subscriber
+    subscriber = O365StreamingSubscriber(parent=account)
 
-    # get an inbox folder events subscription
-    subscription = mn.subscribe(resource=mailbox.inbox_folder())
+    # ... and subscribe to resource events
+    resource = mailbox.inbox_folder()
+    events = [O365EventType.CREATED]
+    subscriber.subscribe(resource=resource, events=events)
 
-    # use default handler which simply logs out the arriving events
-    mn.create_event_channel(subscriptions=subscription)
+    # subscriber keeps track of active subscriptions
+    assert len(subscriber.subscriptions) == 1
 
-O365 documentation on streaming notifications can be found `here
+    # implement a notification handler for customized behavior
+    subscriber.start_streaming(handler=O365NotificationHandler())
+
+*O365* documentation on streaming notifications can be found `here
 <https://docs.microsoft.com/en-us/previous-versions/office/office-365-api/api/beta/
 notify-streaming-rest-operations>`_.
 
