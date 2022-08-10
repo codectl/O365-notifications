@@ -175,10 +175,8 @@ class O365Subscriber(ApiComponent, ABC):
     def renew_subscriptions(self):
         names = ", ".join(f"'{s.resource}'" for s in self.subscriptions)
         logger.info(f"Renewing subscriptions for {names} ...")
-        map(
-            lambda s: self.subscribe(resource=s.resource, events=s.events),
-            self.subscriptions,
-        )
+        for sub in self.subscriptions:
+            self.subscribe(resource=sub.resource, events=sub.events)
         logger.info("Subscriptions renewed.")
 
 
