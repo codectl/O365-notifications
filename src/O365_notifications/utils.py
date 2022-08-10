@@ -2,7 +2,7 @@ import typing
 from dataclasses import dataclass, fields
 
 import O365.mailbox
-from marshmallow import post_load, Schema
+from marshmallow import Schema, post_load
 
 
 def build_url(resource: O365.utils.ApiComponent) -> typing.Optional[str]:

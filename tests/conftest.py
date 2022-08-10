@@ -1,5 +1,4 @@
 import pytest
-
 from O365.utils import BaseTokenBackend
 
 
