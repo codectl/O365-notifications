@@ -83,6 +83,6 @@ jobs:
 #    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
     needs: [ success ]
     steps:
-      - uses: ./.github/workflows/release
+      - uses: ./.github/workflows/release.yaml
         with:
           tag: github.ref
