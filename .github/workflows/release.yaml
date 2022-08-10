@@ -11,11 +11,10 @@ jobs:
   pre-conditions:
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'push'
-#      && startsWith(github.event.ref, 'refs/tags')
+#      github.event_name == 'push'
       && github.event.workflow_run.conclusion == 'success'
     steps:
-      - run: echo "OK"
+      - run: echo ${{ github.event_name }}
 
   github-publish:
     needs: [ pre-conditions ]
