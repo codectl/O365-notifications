@@ -58,7 +58,7 @@ class O365StreamingSubscriber(O365Subscriber):
         elif base.type == self.namespace.O365NotificationType.KEEP_ALIVE_NOTIFICATION:
             return O365KeepAliveNotification.deserialize(data, **opts)
 
-    def create_event_channel(
+    def start_streaming(
         self,
         *,
         notification_handler: O365BaseNotificationsHandler = None,
@@ -67,7 +67,7 @@ class O365StreamingSubscriber(O365Subscriber):
         refresh_after_expire: bool = False,
     ):
         """
-        Create a new channel for events.
+        Start a new streaming connection.
 
         :param notification_handler: the notification's handler
         :param connection_timeout: time in minutes in which connection closes
@@ -161,4 +161,4 @@ class O365StreamingSubscriber(O365Subscriber):
             else:
                 break
 
-        logger.info("Stopped listening for events: connection closed.")
+        logger.info("Cancel streaming: connection closed.")
