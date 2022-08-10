@@ -3,11 +3,11 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+from marshmallow import Schema, fields, post_load, pre_dump
 from O365.utils import ApiComponent
-from marshmallow import fields, post_load, pre_dump, Schema
 
-from O365_notifications.utils import build_url, DeserializerMixin
 from O365_notifications.constants import O365EventType, O365Namespace
+from O365_notifications.utils import DeserializerMixin, build_url
 
 __all__ = (
     "O365BaseNotification",

@@ -1,7 +1,7 @@
 import json
 import logging
-import requests
 
+import requests
 from marshmallow import EXCLUDE, fields
 
 from O365_notifications.base import (
