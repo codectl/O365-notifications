@@ -83,4 +83,4 @@ jobs:
     needs: [ success ]
     uses: ./.github/workflows/release.yaml
     with:
-      tag: github.ref
+      tag: ${{ github.ref }}
