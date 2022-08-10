@@ -117,7 +117,7 @@ class TestMailbox:
                 self.notifications.append(notification)
 
         handler = DummyHandler()
-        subscriber.create_event_channel(notification_handler=handler)
+        subscriber.start_streaming(notification_handler=handler)
         assert len(handler.notifications) == 3
         assert type(handler.notifications[0]) == O365KeepAliveNotification
         assert type(handler.notifications[1]) == O365Notification
