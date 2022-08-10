@@ -28,8 +28,9 @@ from Office 365. There are currently 2 ways for receiving notifications:
 
 The versions on these are beta. For more details, see its documentation.
 
-This approach is built on top of the current `O365 <https://github.com/O365/python-o365
->`_ package. You are recommended to look into its documentation for advance setups.
+This approach is built on top of the current
+`O365 <https://github.com/O365/python-o365>`_ package. You are recommended to look into
+its documentation for advance setups.
 
 Notification strategies
 =======================
