@@ -5,11 +5,6 @@ on:
   workflow_call:
 
 jobs:
-  pre-conditions:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo ${{ inputs.ref }}
 
   github-publish:
     runs-on: ubuntu-latest
@@ -20,7 +15,6 @@ jobs:
           publish: True
         env:
           GITHUB_TOKEN: ${{ github.token }}
-
 
   pypi-publish:
     runs-on: ubuntu-latest
