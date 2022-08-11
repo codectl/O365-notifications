@@ -69,22 +69,16 @@ jobs:
 #      - name: Submit coverage to codecov
 #        uses: codecov/codecov-action@v3
 
-  success:
-    runs-on: ubuntu-latest
+  release-draft:
 #    needs:
 #      - linters
 #      - tests
 #      - coverage
-    steps:
-      - run: echo "Done"
-
-  release-draft:
-    needs: [ success ]
     uses: ./.github/workflows/release-drafter.yaml
 
   publish:
     if: |
-      github.event_name == "push"
-      && startsWith(github.event.ref, "refs/tags")
+      github.event_name == 'push'
+      && startsWith(github.event.ref, 'refs/tags')
     needs: [ release-draft ]
     uses: ./.github/workflows/release.yaml
