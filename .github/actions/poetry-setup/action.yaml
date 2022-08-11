@@ -20,8 +20,6 @@ runs:
 
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v4
-      env:
-        AGENT_TOOLSDIRECTORY: ${{ runner.tool_cache }}
       with:
         python-version: ${{ inputs.python-version }}
 
