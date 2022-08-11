@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/pyenvsetup
+      - uses: ./.github/actions/poetry-setup
         with:
           python-version: "3.9"
       - name: Build & publish with poetry
