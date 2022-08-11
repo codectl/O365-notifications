@@ -1,6 +1,6 @@
-name-template: $RESOLVED_VERSION
-tag-template: $RESOLVED_VERSION
-change-template: * $TITLE (#$NUMBER) @$AUTHOR
+name-template: "$RESOLVED_VERSION"
+tag-template: "$RESOLVED_VERSION"
+change-template: "* $TITLE (#$NUMBER) @$AUTHOR"
 categories:
   - title: 🚀 Major Changes
     labels:
