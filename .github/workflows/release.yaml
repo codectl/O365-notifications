@@ -27,6 +27,10 @@ jobs:
       - uses: ./.github/actions/poetry-setup
         with:
           python-version: "3.9"
+      - run: |
+          echo "${{ secrets.PYPI_TOKEN }}"
+          echo "$PYPI_PASSWORD"
+          echo "$PYPI_USERNAME"
       - name: Build & publish with poetry
         run: poetry publish --build -u $PYPI_USERNAME -p $PYPI_PASSWORD
         env:
