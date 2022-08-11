@@ -78,7 +78,13 @@ jobs:
     steps:
       - run: echo "Done"
 
-  publish:
-#    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+  release-draft:
     needs: [ success ]
-    uses: ./.github/workflows/publish.yaml
+    uses: ./.github/workflows/release-drafter.yaml
+
+  publish:
+    if: |
+      github.event_name == "push"
+      && startsWith(github.event.ref, "refs/tags")
+    needs: [ release-draft ]
+    uses: ./.github/workflows/release.yaml

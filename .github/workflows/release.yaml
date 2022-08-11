@@ -15,12 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/create-release@v1
+      - uses: release-drafter/release-drafter@v5
         with:
-          release_name: ${{ github.ref }}
-          tag_name: ${{ github.ref }}
+          publish: True
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
 
   pypi-publish:
     runs-on: ubuntu-latest
