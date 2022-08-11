@@ -1,17 +1,17 @@
 ---
-name-template: "$NEXT_PATCH_VERSION"
-tag-template: "$NEXT_PATCH_VERSION"
+name-template: "$NEXT_{PATCH,MINOR,MAJOR}_VERSION"
+tag-template: "$NEXT_{PATCH,MINOR,MAJOR}_VERSION"
 change-template: "* $TITLE @$AUTHOR (#$NUMBER)"
 version-resolver:
   major:
     labels:
-      - 'major'
+      - major
   minor:
     labels:
-      - 'minor'
+      - minor
   patch:
     labels:
-      - 'patch'
+      - patch
   default: patch
 template: |
   ## Changes
