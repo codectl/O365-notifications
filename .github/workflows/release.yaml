@@ -3,17 +3,13 @@ name: Release
 
 on:
   workflow_call:
-    inputs:
-      tag:
-        required: true
-        type: string
 
 jobs:
   pre-conditions:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo ${{ inputs.tag }}
+          echo ${{ inputs.ref }}
 
   github-publish:
     runs-on: ubuntu-latest
@@ -28,7 +24,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
   pypi-publish:
-    needs: [ pre-conditions ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
