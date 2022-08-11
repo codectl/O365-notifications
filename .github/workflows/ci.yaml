@@ -75,3 +75,5 @@ jobs:
       && startsWith(github.event.ref, 'refs/tags')
     needs: [ release-draft ]
     uses: ./.github/workflows/release.yaml
+    secrets:
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
