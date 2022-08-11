@@ -22,14 +22,14 @@ O365-notifications
 from Office 365. There are currently 2 ways for receiving notifications:
 
 * `Push Notifications <https://docs.microsoft.com/en-us/previous-versions/office/
-  office-365-api/api/beta/notify-rest-operations-beta>`_
+  office-365-api/api/beta/notify-rest-operations-beta>`__
 * `Stream Notifications <https://docs.microsoft.com/en-us/previous-versions/office/
-  office-365-api/api/beta/notify-streaming-rest-operations>`_
+  office-365-api/api/beta/notify-streaming-rest-operations>`__
 
 The versions on these are beta. For more details, see its documentation.
 
-This approach is built on top of the current `O365
-<https://github.com/O365/python-o365>`_ package. You are recommended to look into its
+This approach is built on top of the current `O365 <https://github
+.com/O365/python-o365>`__ package. You are recommended to look into its
 documentation for advance setups.
 
 Notification strategies
@@ -39,16 +39,16 @@ As mentioned, there currently 2 supported notification types in *O365*: **push**
 
 As of now, this project relies on *Outlook REST Beta API*. But because this API is
 now deprecated and will be decommissioned, a transition to *Microsoft Graph API* is
-required. See `this <Important-note-⚠️>`_ section for more details.
+required. See `this <Important-note-⚠️>`__ section for more details.
 
 Push notifications
 ------------------
 This project does not contain an implementation for this type of notification.
 Therefore, contributions are more than welcome.
 
-*O365* documentation on push notifications can be found `here
-<https://docs.microsoft.com/en-us/previous-versions/office/office-365-api/api/beta/
-notify-rest-operations-beta>`_.
+*O365* documentation on push notifications can be found `here <https://docs.microsoft
+.com/en-us/previous-versions/office/office-365-api/api/beta/notify-rest-operations
+-beta>`__.
 
 Streaming notifications
 -----------------------
@@ -79,14 +79,14 @@ on how to use it is found below:
     # implement a notification handler for customized behavior
     subscriber.start_streaming(handler=O365NotificationHandler())
 
-*O365* documentation on streaming notifications can be found `here
-<https://docs.microsoft.com/en-us/previous-versions/office/office-365-api/api/beta/
-notify-streaming-rest-operations>`_.
+*O365* documentation on streaming notifications can be found `here <https://docs
+.microsoft.com/en-us/previous-versions/office/office-365-api/api/beta/
+notify-streaming-rest-operations>`__.
 
 Important note ⚠️
-==============
+=================
 As communicated by *Microsoft* `here <https://developer.microsoft.com/en-us/graph/
-blogs/outlook-rest-api-v2-0-deprecation-notice>`_, The ``v2.0`` REST endpoint will be
+blogs/outlook-rest-api-v2-0-deprecation-notice>`__, The ``v2.0`` REST endpoint will be
 fully decommissioned in November 2022, and the ``v2.0`` documentation will be removed
 shortly after.
 
@@ -97,8 +97,8 @@ Let's see what it means for each one of the notification types:
 Push notifications
 ^^^^^^^^^^^^^^^^^^
 Push notifications will be moved to *Microsoft Graph*, and go under the name of
-**change notifications**. Its documentation can be found `here
-<https://docs.microsoft.com/en-us/graph/api/resources/webhooks?view=graph-rest-1.0)>`_.
+**change notifications**. Its documentation can be found `here <https://docs
+.microsoft.com/en-us/graph/api/resources/webhooks?view=graph-rest-1.0)>`__.
 
 Transitioning to the *Microsoft Graph* should be a simple and straightforward task.
 
@@ -107,8 +107,8 @@ Streaming notifications
 Unfortunately *Microsoft* will not port this service to *Microsoft Graph*. Therefore, as
 of November 2022, the current implementation in this project will be obsolete. More
 details on that can be found `here <https://docs.microsoft.com/en-us/outlook/rest/
-compare-graph>`_.
+compare-graph>`__.
 
 License
 =======
-MIT licensed. See `LICENSE <LICENSE>`_.
+MIT licensed. See `LICENSE <LICENSE>`__.
