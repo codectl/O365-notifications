@@ -19,7 +19,6 @@ jobs:
         with:
           release_name: ${{ github.ref }}
           tag_name: ${{ github.ref }}
-          body_path: CHANGELOG.rst
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
