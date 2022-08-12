@@ -7,6 +7,8 @@ on:
     tags: [ "[0-9]+.[0-9]+.[0-9]+*" ]
   pull_request:
     branches: [ master ]
+  pull_request_target:
+    branches: [ master ]
 
 jobs:
 
@@ -62,11 +64,15 @@ jobs:
       - name: Submit coverage to codecov
         uses: codecov/codecov-action@v3
 
-  release-draft:
+  triage:
     needs:
       - linters
       - tests
       - coverage
+    uses: ansible/devtools/.github/workflows/ack.yml@main
+
+  release-draft:
+    needs: [ triage ]
     uses: ./.github/workflows/release-drafter.yaml
 
   publish:
