@@ -1,9 +1,0 @@
----
-name: triage
-on:
-  pull_request:
-  pull_request_target:
-
-jobs:
-  ack:
-    uses: ansible/devtools/.github/workflows/ack.yml@main
