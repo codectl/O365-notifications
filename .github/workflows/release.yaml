@@ -1,5 +1,5 @@
 ---
-name: Release
+name: release
 
 on:
   workflow_call:
@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: release-drafter/release-drafter@v5
+      - name: Publish release in Github
+        uses: release-drafter/release-drafter@v5
         with:
           config-name: release-drafter.yaml
           publish: True
@@ -24,7 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/poetry-setup
+      - name: Install & configure poetry
+        uses: ./.github/actions/poetry-setup
         with:
           python-version: "3.9"
       - name: Build & publish with poetry
