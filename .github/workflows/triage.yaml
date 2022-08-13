@@ -17,6 +17,7 @@ jobs:
 
       # Use of release drafter action for adding semantic labels based on
       # either title, body or source branch name
+      - name: Apply labeling
       - uses: release-drafter/release-drafter@v5
         with:
           disable-autolabeler: false
