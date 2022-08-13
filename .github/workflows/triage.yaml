@@ -1,0 +1,16 @@
+---
+name: triage
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo ${{ github.event_name }}
+  labeling:
+    uses: ansible/devtools/.github/workflows/ack.yml@main
