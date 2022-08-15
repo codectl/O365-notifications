@@ -1,5 +1,5 @@
 ignore_regexps = [
-    r"^(?![a-z]{3,}\s*:).*$",
+    r"^(?![a-z]{2,}\s*:).*$",
     r"^$",
 ]
 
@@ -14,7 +14,7 @@ body_process = ReSub(r".*", r"")
 
 subject_process = (
     strip
-    | ReSub(r"^([a-z]{3,}\s*:)(.*:)?\s*(.*)$", r"\3")
+    | ReSub(r"^([a-z]{2,}\s*:)(.*:)?\s*(.*)$", r"\3")
     | ucfirst
     | final_dot
 )
