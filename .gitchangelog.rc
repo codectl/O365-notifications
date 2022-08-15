@@ -4,9 +4,10 @@ ignore_regexps = [
 ]
 
 section_regexps = [
-    ("Features", [r"^[nN]ew\s*:.*$"]),
     ("Major Changes", [r"^[mM]aj(or)?\s*:.*$"]),
+    ("Features", [r"^([fF]eat(ure)?)\s*:.*$"]),
     ("Fix", [r"^[fF]ix\s*:.*$"]),
+    ("Chore", [r"^[cC]hore\s*:.*$"]),
     ("Other", None), ## Match all lines
 ]
 
