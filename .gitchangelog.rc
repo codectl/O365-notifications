@@ -7,11 +7,11 @@ ignore_regexps = [
 ]
 
 section_regexps = [
-    ("Chore", [r"^chore\s*:.*$"]),
+    ("Chores", [r"^chore\s*:.*$"]),
     ("Features", [r"^(feat(ure)?)\s*:.*$"]),
-    ("Fix", [r"^fix\s*:.*$"]),
-    ("Major", [r"^maj(or)?\s*:.*$"]),
-    ("Other", None), ## Match all lines
+    ("Fixes", [r"^fix\s*:.*$"]),
+    ("Major Changes", [r"^maj(or)?\s*:.*$"]),
+    ("General Changes", None), ## Match all lines
 ]
 
 body_process = noop
