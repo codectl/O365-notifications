@@ -2,66 +2,54 @@ name-template: "$RESOLVED_VERSION"
 tag-template: "$RESOLVED_VERSION"
 change-template: "* $TITLE (#$NUMBER) @$AUTHOR"
 categories:
-  - title: 🚀 Major Changes
-    labels:
-      - major # c6476b
-  - title: ⚡ Features
-    labels:
-      - feature # 006b75
-      - enhancement # ededed
-      - refactoring
-  - title: 🐛 Bug Fixes
-    labels:
-      - bug # fbca04
-      - fix
-      - bugfix
-  - title: 🔚 Deprecations
-    labels:
-      - deprecated # fef2c0
+  - title: "⬆️ Major Changes"
+    labels: [major, breaking]
+  - title: "🚀 New"
+    labels: [feature, enhancement]
+  - title: "🐛 Bug Fixes"
+    labels: [bug, fix]
+  - title: "🔚 Deprecations"
+    label: [deprecated]
 exclude-labels:
-  - bot:chronographer:skip
   - skip-changelog
 version-resolver:
   major:
     labels:
-      - major
+      - "type: major"
+      - "type: breaking"
   minor:
     labels:
-      - minor
-      - feature
-      - enhancement
-      - refactoring
+      - "type: feature"
+      - "type: enhancement"
   patch:
     labels:
-      - patch
-      - bug
-      - deprecated
+      - "type: bug"
+      - "type: chore"
+      - "type: deprecated"
+      - "type: dependencies"
+      - "type: documentation"
+      - "type: maintenance"
+      - "type: security"
+      - "type: refactoring"
   default: patch
-exclude-contributors:
-  - dependabot
-  - pre-commit-ci
+exclude-contributors: [dependabot]
 autolabeler:
-  - label: skip-changelog
-    title:
-      - "/pre-commit autoupdate/"
-    body:
-      - "/type: chore/i"
-    branch:
-      - "/^chore/i"
   - label: bug
-    branch:
-      - "/^fix/i"
-    body:
-      - "/type: fix/i"
-  - label: feature
-    title:
-      - "/^(feat|feature)/i"
-    body:
-      - "/type: feature/i"
+    branch: [ "/^fix\/.+/" ]
+    title: [ "/^fix:/" ]
   - label: deprecated
-    title:
-      - "/^deprecat(ed|ion)/i"
-    body:
-      - "/type: deprecat(ed|ion)/i"
+    title: ["/deprecat(ed|ion)/i"]
+  - label: dependencies
+    title: ["/dependenc(y|ies)/i"]
+  - label: documentation
+    title: ["/^docs:/", "/documentation/i"]
+    files: ["*.md", "*.rst"]
+  - label: feature
+    branch: [ "/^feat(ure)?\/.+/" ]
+    title: ["/^feat(ure)?:/"]
+  - label: refactoring
+    title: ["/^refactor:/"]
+  - label: skip-changelog
+    title: ["/pre-commit autoupdate/"]
 template: |
   $CHANGES
