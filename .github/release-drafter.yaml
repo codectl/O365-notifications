@@ -54,4 +54,6 @@ autolabeler:
   - label: skip-changelog
     title: ["/pre-commit autoupdate/"]
 template: |
+  ## changes
+  
   $CHANGES
