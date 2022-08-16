@@ -35,6 +35,7 @@ jobs:
           disable-reviews: true
 
   version-update:
+    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     needs: [ triage ]
     steps:
@@ -43,7 +44,6 @@ jobs:
 
       - name: update release notes if already merged
         id: update-release-notes
-        if: ${{ github.event.pull_request.merged }}
         uses: release-drafter/release-drafter@v5
         with:
           config-name: release-drafter.yaml
@@ -51,7 +51,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: update project version
-        if: ${{ github.event.pull_request.merged }}
         uses: ./.github/workflows/version.yaml
         with:
           tag: ${{ steps.update-release-notes.outputs.tag_name }}
