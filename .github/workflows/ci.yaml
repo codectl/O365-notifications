@@ -11,16 +11,12 @@ on:
 jobs:
 
   linters:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/poetry-setup
         with:
           python-version: "3.9"
-          os: ${{ matrix.os }}
       - name: Run linter with tox
         shell: bash
         run: tox -e lint
