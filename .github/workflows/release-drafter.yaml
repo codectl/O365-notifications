@@ -49,9 +49,12 @@ jobs:
           config-name: release-drafter.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      tag_name: ${{ steps.update-release-notes.outputs.tag_name }}
 
   version-update:
+    if: github.event.pull_request.merged
     needs: [ drafter-update ]
     uses: ./.github/workflows/version.yaml
     with:
-      tag: ${{ steps.update-release-notes.outputs.tag_name }}
+      tag: ${{ needs.drafter-update.outputs.tag_name }}
