@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install & configure poetry
+      - name: install & configure poetry
         uses: ./.github/actions/poetry-setup
         with:
           python-version: "3.9"
