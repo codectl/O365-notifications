@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "O365-notifications"
-version = "0.0.0"
+version = "0.1.0"
 description = "Pythonic handler for O365 Streaming & Push Notifications"
 authors = ["Renato Damas <rena2damas@gmail.com>"]
 license = "MIT"
