@@ -4,11 +4,11 @@ change-template: "* $TITLE (#$NUMBER) @$AUTHOR"
 categories:
   - title: "⬆️ Major Changes"
     labels: [major, breaking]
-  - title: "🚀 New"
+  - title: "🚀 what's new"
     labels: [feature, enhancement]
-  - title: "🐛 Bug Fixes"
+  - title: "🐛 bug fixes"
     labels: [bug, fix]
-  - title: "🔚 Deprecations"
+  - title: "🔚 deprecations"
     label: [deprecated]
 exclude-labels:
   - skip-changelog
@@ -32,7 +32,9 @@ version-resolver:
       - "type: security"
       - "type: refactoring"
   default: patch
-exclude-contributors: [dependabot]
+exclude-contributors:
+  - dependabot
+  - github-actions
 autolabeler:
   - label: bug
     branch: [ "/^(hot)?fix\/.+/" ]
