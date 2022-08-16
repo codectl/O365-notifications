@@ -11,7 +11,7 @@ section_regexps = [
     ("Features", [r"^(feat(ure)?)\s*:.*$"]),
     ("Fixes", [r"^fix\s*:.*$"]),
     ("Major Changes", [r"^maj(or)?\s*:.*$"]),
-    ("General Changes", None), ## Match all lines
+    ("Other", None), ## Match all lines
 ]
 
 body_process = noop
