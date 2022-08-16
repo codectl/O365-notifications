@@ -58,19 +58,3 @@ jobs:
         run: tox -e coverage -- -p no:sugar -p no:warnings -q
       - name: Submit coverage to codecov
         uses: codecov/codecov-action@v3
-
-  release-draft:
-    needs:
-      - linters
-      - tests
-      - coverage
-    uses: ./.github/workflows/release-drafter.yaml
-
-  publish:
-    if: |
-      github.event_name == 'push'
-      && startsWith(github.event.ref, 'refs/tags')
-    needs: [ release-draft ]
-    uses: ./.github/workflows/release.yaml
-    secrets:
-      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}

@@ -2,14 +2,51 @@
 name: release drafter
 
 on:
-  workflow_call:
+  pull_request:
+    types: [opened, reopened, labeled, unlabeled, synchronize]
+  pull_request_target:
+    types: [opened, reopened, labeled, unlabeled, synchronize]
 
 jobs:
-  update-draft:
+  label:
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - name: checkout
+        uses: actions/checkout@v3
+
+      # Use of release drafter action for adding semantic labels based on
+      # either title, body or source branch name
+      - name: apply labeling
+        uses: release-drafter/release-drafter@v5
+        with:
+          disable-autolabeler: false
+          disable-releaser: true
+          config-name: release-drafter.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Ensure that one of the required labels is present and none of the undesired is absent
+      # See https://github.com/jesusvasquez333/verify-pr-label-action
+      - name: verify PR label action
+        uses: jesusvasquez333/verify-pr-label-action@v1.4.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          valid-labels: "bug, enhancement, feature, refactoring, major, deprecated, skip-changelog"
+          invalid-labels: "help wanted, invalid, feedback-needed, incomplete"
+          pull-request-number: ${{ github.event.pull_request.number }}
+          disable-reviews: true
+
+      - name: update release notes if this is already merged
+        id: drafter
+        if: github.event.pull_request.merged
+        uses: release-drafter/release-drafter@v5
         with:
           config-name: release-drafter.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: update version
+        if: github.event.pull_request.merged
+        uses: ./.github/workflows/version.yaml
+        with:
+          tag: ${{ steps.drafter.outputs.tag_name }}
