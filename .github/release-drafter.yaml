@@ -3,13 +3,20 @@ tag-template: "$RESOLVED_VERSION"
 change-template: "* $TITLE (#$NUMBER) @$AUTHOR"
 categories:
   - title: "⬆️ Major Changes"
-    labels: [major, breaking]
+    labels:
+      - major         # C6476B
+      - breaking      # C6476B
   - title: "🚀 what's new"
-    labels: [feature, enhancement]
+    labels:
+      - feature       # 006B75
+      - enhancement   # EDEDED
   - title: "🐛 bug fixes"
-    labels: [bug, fix]
+    labels:
+      - bug           # FBCA04
+      - fix           # FBCA04
   - title: "🔚 deprecations"
-    label: [deprecated]
+    label:
+      - deprecated    # FEF2C0
 exclude-labels:
   - skip-changelog
 version-resolver:
