@@ -2,7 +2,7 @@ ignore_regexps = [
     r"@minor", r"!minor",
     r"@wip", r"!wip",
     r"^(?![a-z]{2,}\s*:).*$",
-    r"^[ci|minor|style]\s*:.*$",
+    r"^(ci|minor|style)\s*:.*$",
     r"^$",
 ]
 
