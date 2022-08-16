@@ -35,7 +35,7 @@ version-resolver:
 exclude-contributors: [dependabot]
 autolabeler:
   - label: bug
-    branch: [ "/^fix\/.+/" ]
+    branch: [ "/^(hot)?fix\/.+/" ]
     title: [ "/^fix:/" ]
   - label: deprecated
     title: ["/deprecat(ed|ion)/i"]
