@@ -2,7 +2,7 @@ name-template: "$RESOLVED_VERSION"
 tag-template: "$RESOLVED_VERSION"
 change-template: "* $TITLE (#$NUMBER) @$AUTHOR"
 categories:
-  - title: "⬆️ Major Changes"
+  - title: "⬆️ major changes"
     labels:
       - major         # C6476B
       - breaking      # C6476B
@@ -14,11 +14,15 @@ categories:
     labels:
       - bug           # FBCA04
       - fix           # FBCA04
+  - title: "⬆️ Dependencies"
+    collapse-after: 3
+    labels:
+      - dependencies  # 0025FF
   - title: "🔚 deprecations"
     label:
       - deprecated    # FEF2C0
 exclude-labels:
-  - skip-changelog
+  - skip-changelog    # EEEEEE
 version-resolver:
   major:
     labels:
@@ -40,8 +44,8 @@ version-resolver:
       - "type: refactoring"
   default: patch
 exclude-contributors:
-  - dependabot[bot]
-  - github-actions[bot]
+  - dependabot
+  - github-actions
 autolabeler:
   - label: bug
     branch: [ "/^(hot)?fix\/.+/" ]
