@@ -1,11 +1,13 @@
 ---
 name: version
+
 on:
   workflow_call:
     inputs:
       tag:
         required: true
         type: string
+
 jobs:
   bump-version:
     runs-on: ubuntu-latest
