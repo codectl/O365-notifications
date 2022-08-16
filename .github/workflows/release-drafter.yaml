@@ -3,7 +3,7 @@ name: release drafter
 
 on:
   pull_request_target:
-    types: [opened, reopened, labeled, unlabeled, synchronize]
+    types: [opened, reopened, labeled, unlabeled, closed]
 
 jobs:
   label:
@@ -35,7 +35,7 @@ jobs:
           disable-reviews: true
 
       - name: update release notes if this is already merged
-        id: drafter
+        id: update-draft
         if: github.event.pull_request.merged
         uses: release-drafter/release-drafter@v5
         with:
@@ -47,4 +47,4 @@ jobs:
         if: github.event.pull_request.merged
         uses: ./.github/workflows/version.yaml
         with:
-          tag: ${{ steps.drafter.outputs.tag_name }}
+          tag: ${{ steps.update-draft.outputs.tag_name }}
