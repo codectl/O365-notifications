@@ -2,8 +2,6 @@
 name: release drafter
 
 on:
-  pull_request:
-    types: [opened, reopened, labeled, unlabeled, synchronize]
   pull_request_target:
     types: [opened, reopened, labeled, unlabeled, synchronize]
 
