@@ -2,7 +2,7 @@ name-template: "$RESOLVED_VERSION"
 tag-template: "$RESOLVED_VERSION"
 change-template: "* $TITLE (#$NUMBER) @$AUTHOR"
 categories:
-  - title: "⬆️ major changes"
+  - title: "🔥 major changes"
     labels:
       - major         # C6476B
       - breaking      # C6476B
@@ -64,10 +64,10 @@ autolabeler:
     title: [ "/^refactor/" ]
   - label: skip-changelog
     title:
-      - "/pre-commit autoupdate/i"
       - "/^chore/i"
       - "/^build(?!\((dev-)?dep(s|endenc(y|ies))\))/i"
       - "/^test/i"
+      - "/pre-commit autoupdate/i"
 template: |
   ## changes
   
