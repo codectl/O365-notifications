@@ -70,5 +70,5 @@ autolabeler:
       - "/pre-commit autoupdate/i"
 template: |
   ## changes
-  
+
   $CHANGES
