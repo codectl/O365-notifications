@@ -14,7 +14,7 @@ categories:
     labels:
       - bug           # FBCA04
       - fix           # FBCA04
-  - title: "⬆️ Dependencies"
+  - title: "⬆️ dependencies"
     collapse-after: 3
     labels:
       - dependencies  # 0025FF
@@ -51,19 +51,23 @@ autolabeler:
     branch: [ "/^(hot)?fix\/.+/" ]
     title: [ "/^(hot)?fix:/" ]
   - label: deprecated
-    title: ["/deprecat(ed|ion)/i"]
+    title: [ "/\(deprecat(ed|ion)\)/i" ]
   - label: dependencies
-    title: ["/dependenc(y|ies)/i"]
+    title: [ "/\((dev-)?dep(s|endenc(y|ies))\)/i" ]
   - label: documentation
-    title: ["/^docs:/", "/documentation/i"]
-    files: ["*.md", "*.rst"]
+    title: [ "/^docs/", "/documentation/i" ]
+    files: [ "*.\.md", "*.\.rst" ]
   - label: feature
     branch: [ "/^feat(ure)?\/.+/" ]
-    title: ["/^feat(ure)?:/"]
+    title: [ "/^feat(ure)?/" ]
   - label: refactoring
-    title: ["/^refactor:/"]
+    title: [ "/^refactor/" ]
   - label: skip-changelog
-    title: ["/pre-commit autoupdate/"]
+    title:
+      - "/pre-commit autoupdate/i"
+      - "/^chore/i"
+      - "/^build(?!\((dev-)?dep(s|endenc(y|ies))\))/i"
+      - "/^test/i"
 template: |
   ## changes
   
