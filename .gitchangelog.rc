@@ -18,7 +18,7 @@ body_process = noop
 
 subject_process = (
     strip
-    | ReSub(r"^([a-z]{2,}(\([a-z]+\))?\s*:\s*)(.*)$", r"\3 \2")  # remove type & scope
+    | ReSub(r"^([a-z]{2,}(\([a-z]+\))?\s*:\s*)(.*)$", r"\2 \3")  # remove type & scope
     | ReSub(r"^([a-z]{2,}\s*:\s*)?(.*)$", r"\2")  # remove audience
     | ReSub(r"^([^@]*)(@[a-z]+\s+)*$", r"\1")  # remove tags
     | ReSub(r"^\s*(.*?)\s*$", r"\1.")  # strip & final dot
