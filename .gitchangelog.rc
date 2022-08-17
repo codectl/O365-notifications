@@ -1,7 +1,7 @@
 ignore_regexps = [
     r"@minor", r"!minor",
     r"@wip", r"!wip",
-    r"^(?![a-z]{2,}\s*:).*$",
+    r"^(?![a-z]{2,}(\([a-z]+\))?\s*:).*$",
     r"^(ci|minor|style)\s*:.*$",
     r"^$",
 ]
@@ -18,10 +18,10 @@ body_process = noop
 
 subject_process = (
     strip
-    | ReSub(r"^([a-z]{2,}\s*:\s*)([a-z]{2,}\s*:\s*)?(.*)$", r"\3")
+    | ReSub(r"^([a-z]{2,}(\([a-z]+\))?\s*:\s*)(.*)$", r"\3 \2")  # remove type & scope
+    | ReSub(r"^([a-z]{2,}\s*:\s*)?(.*)$", r"\2")  # remove audience
     | ReSub(r"^([^@]*)(@[a-z]+\s+)*$", r"\1")  # remove tags
-    | ucfirst
-    | final_dot
+    | ReSub(r"^\s*(.*?)\s*$", r"\1.")  # strip & final dot
 )
 
 tag_filter_regexp = r"^[0-9]+\.[0-9]+(\.[0-9]+)?$"
