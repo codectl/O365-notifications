@@ -17,7 +17,7 @@ section_regexps = [
     ("other", None),
 ]
 
-body_process = noop
+body_process = ReSub(r"(.|\n)*", "")
 
 subject_process = (
     strip
