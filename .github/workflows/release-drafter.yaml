@@ -2,7 +2,7 @@
 name: release drafter
 
 on:
-  pull_request_target:
+  pull_request:
     types: [ opened, reopened, labeled, unlabeled, closed ]
 
 jobs:
@@ -29,8 +29,8 @@ jobs:
         uses: jesusvasquez333/verify-pr-label-action@v1.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          valid-labels: "bug, dependencies, deprecated, docs, documentation,
-                         enhancement, feature, major, refactoring, skip-changelog"
+          valid-labels: "bug, breaking, dependencies, deprecated, docs, documentation,
+                         enhancement, feature, fix, major, refactoring, skip-changelog"
           invalid-labels: "help wanted, invalid, feedback-needed, incomplete"
           pull-request-number: ${{ github.event.pull_request.number }}
           disable-reviews: true
