@@ -53,7 +53,7 @@ autolabeler:
   - label: deprecated
     title: [ "/\\(deprecat(ed|ion)\\)/i" ]
   - label: dependencies
-    title: [ "/\\((dev-)?dep(s|endenc(y|ies))(dev-)?\\)/i" ]
+    title: [ "/\\((dev-)?dep(s|endenc(y|ies))(-dev)?\\)/i" ]
   - label: documentation
     title: [ "/^docs/", "/documentation/i" ]
     files: [ "*.\\.md", "*.\\.rst" ]
@@ -65,7 +65,7 @@ autolabeler:
   - label: skip-changelog
     title:
       - "/^chore/i"
-      - "/^build(?!\\((dev-)?dep(s|endenc(y|ies))(dev-)?\\))/i"
+      - "/^build(?!\\((dev-)?dep(s|endenc(y|ies))(-dev)?\\))/i"
       - "/^test/i"
       - "/pre-commit autoupdate/i"
 template: |
