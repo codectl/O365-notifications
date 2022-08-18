@@ -47,7 +47,7 @@ exclude-contributors:
   - dependabot
   - github-actions
 autolabeler:
-  - labels: [ fix ]
+  - label: [ bug, fix ]
     branch: [ "/^(hot)?fix\/.+/" ]
     title: [ "/^(hot)?fix:/" ]
   - label: deprecated
