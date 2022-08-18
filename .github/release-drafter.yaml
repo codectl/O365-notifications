@@ -55,7 +55,7 @@ autolabeler:
   - label: dependencies
     title: [ "/\\((dev-)?dep(s|endenc(y|ies))(-dev)?\\)/i" ]
   - label: documentation
-    title: [ "/^docs/", "/documentation/i" ]
+    title: [ "/^doc(s)?/", "/documentation/i" ]
     files: [ "*.\\.md", "*.\\.rst" ]
   - label: feature
     branch: [ "/^feat(ure)?\/.+/" ]
@@ -64,9 +64,8 @@ autolabeler:
     title: [ "/^refactor/" ]
   - label: skip-changelog
     title:
-      - "/^chore/i"
       - "/^build(?!\\((dev-)?dep(s|endenc(y|ies))(-dev)?\\))/i"
-      - "/^test/i"
+      - "/^(chore|style|test)/i"
       - "/pre-commit autoupdate/i"
 template: |
   ## changes
