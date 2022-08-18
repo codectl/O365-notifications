@@ -12,7 +12,7 @@ categories:
       - enhancement   # EDEDED
   - title: "🐛 bug fixes"
     labels:
-      - bug           # FBCA04
+      - bug           # D73A4A
       - fix           # FBCA04
   - title: "⬆️ dependencies"
     collapse-after: 3
@@ -47,7 +47,7 @@ exclude-contributors:
   - dependabot
   - github-actions
 autolabeler:
-  - label: bug
+  - label: [ bug, fix ]
     branch: [ "/^(hot)?fix\/.+/" ]
     title: [ "/^(hot)?fix:/" ]
   - label: deprecated
