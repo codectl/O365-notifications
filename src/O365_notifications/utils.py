@@ -16,7 +16,6 @@ def build_url(resource: O365.utils.ApiComponent) -> typing.Optional[str]:
         )
 
     # TODO: complete this check sequence as needed
-
     return None
 
 
