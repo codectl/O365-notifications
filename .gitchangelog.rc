@@ -1,6 +1,6 @@
 ignore_regexps = [
     r"^(?![a-z]{2,}(\([a-z-]+\))?\s*:).*$",
-    r"^style\s*:.*$",
+    r"^style(\([a-z-]+\))?\s*:.*$",
     r"#minor",
     r"#wip",
     r"#skip",
