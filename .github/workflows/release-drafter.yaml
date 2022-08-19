@@ -15,7 +15,7 @@ jobs:
       # Use of release drafter action for adding semantic labels based on
       # either title, body or source branch name
       - name: apply label
-        if: ${{ github.event.action == "opened" }}
+        if: ${{ github.event.action == 'opened' }}
         uses: release-drafter/release-drafter@v5
         with:
           disable-autolabeler: false

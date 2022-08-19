@@ -44,8 +44,8 @@ version-resolver:
       - "type: refactoring"
   default: patch
 exclude-contributors:
-  - dependabot
-  - github-actions
+  - dependabot[bot]
+  - github-actions[bot]
 autolabeler:
   - label: bug
     branch: [ "/^(hot)?fix\/.+/" ]
