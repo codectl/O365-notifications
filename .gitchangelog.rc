@@ -1,7 +1,5 @@
 ignore_regexps = [
-    r"@[\w\-\s]*minor",
-    r"@[\w\-\s]*wip",
-    r"@[\w\-\s]*skip",
+    r"#minor", r"#wip", r"#skip",
     r"^(?![a-z]{2,}(\([a-z-]+\))?\s*:).*$",
     r"^style\s*:.*$",
     r"^$",
@@ -25,7 +23,7 @@ subject_process = (
     strip
     | ReSub(r"^([a-z]{2,}(\([a-z-]+\))?\s*:\s*)(.*)$", r"\2 \3")  # remove type & scope
     | ReSub(r"^([a-z]{2,}\s*:\s*)?(.*)$",              r"\2")     # remove audience
-    | ReSub(r"^([^@]*)(@[\w\-\s]*)$",                  r"\1")     # remove tags
+    | ReSub(r"^([^#]*)(#[a-z-]+\s*)*$",                r"\1")     # remove tags
     | ReSub(r"^\s*(.*?)\s*$",                          r"\1.")    # strip & final dot
 )
 
