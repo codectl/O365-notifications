@@ -109,6 +109,27 @@ of November 2022, the current implementation in this project will be obsolete. M
 details on that can be found `here <https://docs.microsoft.com/en-us/outlook/rest/
 compare-graph>`__.
 
+Tests & linting
+===============
+Run tests with ``tox``:
+
+.. code-block:: bash
+
+    # ensure tox is installed
+    $ tox
+
+Run linter only:
+
+.. code-block:: bash
+
+    $ tox -e lint
+
+Optionally, run coverage as well with:
+
+.. code-block:: bash
+
+    $ tox -e coverage
+
 License
 =======
 MIT licensed. See `LICENSE <LICENSE>`__.
