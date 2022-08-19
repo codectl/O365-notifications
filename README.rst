@@ -109,7 +109,7 @@ of November 2022, the current implementation in this project will be obsolete. M
 details on that can be found `here <https://docs.microsoft.com/en-us/outlook/rest/
 compare-graph>`__.
 
-Tests & linting
+Tests & linting 🚥
 ===============
 Run tests with ``tox``:
 
