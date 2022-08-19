@@ -1,7 +1,9 @@
 ignore_regexps = [
-    r"#minor", r"#wip", r"#skip",
     r"^(?![a-z]{2,}(\([a-z-]+\))?\s*:).*$",
     r"^style\s*:.*$",
+    r"#minor",
+    r"#wip",
+    r"#skip",
     r"^$",
 ]
 
@@ -9,12 +11,12 @@ section_regexps = [
     ("breaking",        [r"^maj(or)?(\([a-z-]+\))?\s*:.*$"]),
     ("features",        [r"^(feat(ure)?)(\([a-z-]+\))?\s*:.*$"]),
     ("fixes",           [r"^fix(\([a-z-]+\))?\s*:.*$"]),
-    ("refactor",        [r"^refactor(\([a-z-]+\))?\s*:.*$"]),
+    ("refactorings",    [r"^refactor(\([a-z-]+\))?\s*:.*$"]),
     ("chores",          [r"^chore(\([a-z-]+\))?\s*:.*$"]),
     ("builds",          [r"^build(\([a-z-]+\))?\s*:.*$"]),
     ("docs",            [r"^docs(\([a-z-]+\))?\s*:.*$"]),
-    ("test",            [r"^test(\([a-z-]+\))?\s*:.*$"]),
-    ("other", None),
+    ("tests",           [r"^test(\([a-z-]+\))?\s*:.*$"]),
+    ("other",           None),
 ]
 
 body_process = ReSub(r"(.|\n)*", "")
