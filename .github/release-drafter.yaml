@@ -55,7 +55,7 @@ autolabeler:
   - label: dependencies
     title: [ "/\\((dev-)?dep(s|endenc(y|ies))(-dev)?\\)/i" ]
   - label: documentation
-    title: [ "/^doc(s)?/", "/documentation/i" ]
+    title: [ "/^docs/", "/\\(docs\\)/i" ]
     files: [ "*.\\.md", "*.\\.rst" ]
   - label: feature
     branch: [ "/^feat(ure)?\/.+/" ]
