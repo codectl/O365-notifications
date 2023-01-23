@@ -9,7 +9,7 @@ packages = [
     { include = "*", from = "src" }
 ]
 homepage = ""
-repository = "https://github.com/rena2damas/O365-notifications"
+repository = "https://github.com/codectl/O365-notifications"
 documentation = ""
 keywords = [
     "O365",
@@ -46,7 +46,7 @@ pytest-cases = "^3.6.13"
 O365 = ["O365"]
 
 [tool.poetry.urls]
-issues = "https://github.com/rena2damas/O365-notifications/issues"
+issues = "https://github.com/codectl/O365-notifications/issues"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
