@@ -5,11 +5,11 @@ O365-notifications
 .. image:: https://img.shields.io/pypi/v/O365-notifications
     :target: https://pypi.org/project/O365-notifications
     :alt: PyPI version
-.. image:: https://github.com/rena2damas/O365-notifications/actions/workflows/ci.yaml/badge.svg
-    :target: https://github.com/rena2damas/O365-notifications/actions/workflows/ci.yaml
+.. image:: https://github.com/codectl/O365-notifications/actions/workflows/ci.yaml/badge.svg
+    :target: https://github.com/codectl/O365-notifications/actions/workflows/ci.yaml
     :alt: CI
-.. image:: https://codecov.io/gh/rena2damas/O365-notifications/branch/master/graph/badge.svg
-    :target: https://app.codecov.io/gh/rena2damas/O365-notifications/branch/master
+.. image:: https://codecov.io/gh/codectl/O365-notifications/branch/master/graph/badge.svg
+    :target: https://app.codecov.io/gh/codectl/O365-notifications/branch/master
     :alt: codecov
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
